@@ -1,0 +1,11 @@
+.glyphicon-thumbnail {
+    font-size: 6rem;
+    background-color: #333333;
+    max-height: 140px;
+    padding: 14% 12px;
+    color: #FFF;
+}
+
+img+.caption {
+    margin-top: 20px;
+}
