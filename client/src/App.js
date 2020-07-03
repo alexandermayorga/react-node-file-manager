@@ -24,7 +24,7 @@ function App() {
         setCurrentFiles(res.data)
         setLoading(false)
       })
-      .catch(err => console.log("Error"))
+      .catch(err => console.log(err))
 
     //Cancel Old requests if new requests are made. This way old data doesn't load if old request finishes after new request
     return () => cancel(); 
@@ -39,7 +39,7 @@ function App() {
         input.current.value = '';
         setLoading(true)
        })
-      .catch(err => console.log("Error"))
+      .catch(err => console.log(err))
   }
 
   function fileUpload(input) {
@@ -51,13 +51,13 @@ function App() {
         input.current.value = '';
         setLoading(true)
        })
-      .catch(err => console.log("Upload Error"))
+      .catch(err => console.log("Upload Error", err))
   }
 
   function deleteFile(fileName) {
     axios.post('/api/delete', { path: `${currentDir}${fileName}`  })
       .then((res) => { setLoading(true) })
-      .catch(err => console.log("Error"))
+      .catch(err => console.log("Error", err))
   }
   
   function openFolder(file) {
