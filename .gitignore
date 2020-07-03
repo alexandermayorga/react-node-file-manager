@@ -1,4 +1,3 @@
-server/uploads/*
 node_modules
 workspace.code-workspace
 project_scope.txt
