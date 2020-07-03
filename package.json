@@ -1,14 +1,11 @@
 {
   "name": "react_file_manager",
-  "version": "0.1.0",
-  "private": true,
+  "version": "1.0.0",
+  "description": "A local File Manager with React and Node",
+  "main": "index.js",
   "dependencies": {
-    "@testing-library/jest-dom": "^4.2.4",
-    "@testing-library/react": "^9.3.2",
-    "@testing-library/user-event": "^7.1.2",
-    "axios": "^0.19.2",
     "body-parser": "^1.19.0",
-    "bootstrap": "^3.4.1",
+    "concurrently": "^5.2.0",
     "debug": "^4.1.1",
     "express": "^4.17.1",
     "express-easy-zip": "^1.1.5",
@@ -16,38 +13,26 @@
     "http-errors": "^1.7.3",
     "morgan": "^1.10.0",
     "multer": "^1.4.2",
-    "react": "^16.13.1",
-    "react-dom": "^16.13.1",
-    "react-scripts": "3.4.1",
-    "sharp": "^0.25.4",
-    "typescript": "^3.9.5"
+    "typescript": "^3.9.5",
+    "sharp": "^0.25.4"
   },
   "scripts": {
-    "client": "PORT=3013 react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject",
+    "start": "node ./server/bin/www",
     "server": "nodemon ./server/bin/www",
-    "start": "concurrently \"npm run server\" \"npm run client\""
+    "client": "cd ./client && npm start",
+    "local": "concurrently \"npm run server\" \"npm run client\"",
+    "build": "cd ./client && npm run build",
+    "install-client-dep": "cd ./client && npm install",
+    "heroku-postbuild": "npm run install-client-dep && npm run build"
   },
-  "eslintConfig": {
-    "extends": "react-app"
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alexandermayorga/react-node-file-manager.git"
   },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
+  "author": "Alexander Mayorga",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/alexandermayorga/react-node-file-manager/issues"
   },
-  "devDependencies": {
-    "concurrently": "^5.2.0",
-    "dotenv": "^8.2.0"
-  },
-  "proxy": "http://localhost:8080"
+  "homepage": "https://github.com/alexandermayorga/react-node-file-manager#readme"
 }

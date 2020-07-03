@@ -1,5 +1,5 @@
 import React from 'react'
-import Thumbnail from './Thumbnail/'
+import Thumbnail from './Thumbnail'
 
 export default function Thumbnails({ files, deleteFile, downloadFile, openFolder}) {
     return (

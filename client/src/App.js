@@ -4,7 +4,7 @@ import './App.css';
 import axios from 'axios';
 import Header from './components/Header';
 import Thumbnails from './components/Thumbnails';
-import Breadcrumbs from './components/Breadcrumbs/';
+import Breadcrumbs from './components/Breadcrumbs';
 import CreateNewFolder from './components/CreateNewFolder';
 import UploadImage from './components/UploadImage';
 
