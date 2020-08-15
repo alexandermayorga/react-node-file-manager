@@ -19,7 +19,7 @@ export default function Thumbnail({ file, deleteFile, downloadFile, openFolder }
 
                 <div className="panel-body">
                     {
-                    file.isDirectory
+                        file.isDirectory
                         &&
                         <div className="thumbnail thumbnail-folder" onDoubleClick={openFolderHandler}>
                             <span className="glyphicon-thumbnail center-block text-center">
@@ -28,13 +28,15 @@ export default function Thumbnail({ file, deleteFile, downloadFile, openFolder }
                         </div>
                     }
                     {
-                    !file.isDirectory
+                        !file.isDirectory
                         && 
-                        < img src={`/uploads${file.parentDir}${file.fileName}`} className="img-responsive center-block img-thumbnail"
+                        <img src={`/uploads${file.parentDir}${file.fileName}`} className="img-responsive center-block img-thumbnail"
                             alt={file.fileName} />
                     }
 
-                    <div className="caption" title={file.fileName}>{file.isDirectory && "/ "}{file.fileName}</div>
+                    <div className="caption" title={file.fileName}>
+                        <span className="glyphicon glyphicon-folder-open" aria-hidden="true" style={{marginRight: "12px"}}></span>{file.fileName}
+                    </div>
 
                 </div>
                 <div className="panel-footer">

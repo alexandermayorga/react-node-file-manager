@@ -1,4 +1,5 @@
 import React, {useRef} from 'react'
+import ButtonGroup from "./ui/ButtonGroup";
 
 export default function UploadImage({fileUpload}) {
     const fileInput = useRef()
@@ -22,9 +23,12 @@ export default function UploadImage({fileUpload}) {
                 />
                 <p className="help-block">Only ".jpg | .png" allowed</p>
             </div>
-            <button type="submit" name="submit" className="btn btn-success">
-                <span className="glyphicon glyphicon-cloud-upload" aria-hidden="true"></span> Upload
-            </button>
+            <ButtonGroup
+                type="submit"
+                name="img_upload_submit"
+                modifierClass="btn-success"
+                glyphicon="glyphicon-cloud-upload"
+            >Upload</ButtonGroup>
         </form>
     )
 }
