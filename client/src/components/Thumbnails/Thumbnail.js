@@ -1,7 +1,9 @@
 import React from 'react'
+import { useHistory } from "react-router-dom";
 import "./style.css";
 
-export default function Thumbnail({ file, deleteFile, downloadFile, openFolder }) {
+export default function Thumbnail({ file, deleteFile, downloadFile }) {
+    let history = useHistory();
     function deleteFileHandler() {
         deleteFile(file.fileName)
     }
@@ -9,8 +11,8 @@ export default function Thumbnail({ file, deleteFile, downloadFile, openFolder }
         downloadFile(file)
     }
 
-    function openFolderHandler(){
-        openFolder(file)
+    function openFolder(){
+        history.push(`/drive/${file._id}`);
     }
 
     return (
@@ -19,23 +21,23 @@ export default function Thumbnail({ file, deleteFile, downloadFile, openFolder }
 
                 <div className="panel-body">
                     {
-                        file.isDirectory
+                        file.isFolder
                         &&
-                        <div className="thumbnail thumbnail-folder" onDoubleClick={openFolderHandler}>
+                        <div className="thumbnail thumbnail-folder" onDoubleClick={openFolder}>
                             <span className="glyphicon-thumbnail center-block text-center">
                                 <span className="glyphicon glyphicon-folder-open" aria-hidden="true"></span>
                             </span>
                         </div>
                     }
                     {
-                        !file.isDirectory
+                        !file.isFolder
                         && 
-                        <img src={`/uploads${file.parentDir}${file.fileName}`} className="img-responsive center-block img-thumbnail"
-                            alt={file.fileName} />
+                        <img src={`/uploads${file.userID}/${file.name}`} className="img-responsive center-block img-thumbnail"
+                            alt={file.name} />
                     }
 
-                    <div className="caption" title={file.fileName}>
-                        <span className="glyphicon glyphicon-folder-open" aria-hidden="true" style={{marginRight: "12px"}}></span>{file.fileName}
+                    <div className="caption" title={file.name}>
+                        <span className="glyphicon glyphicon-folder-open" aria-hidden="true" style={{marginRight: "12px"}}></span>{file.name}
                     </div>
 
                 </div>

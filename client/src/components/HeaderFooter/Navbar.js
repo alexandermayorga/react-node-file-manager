@@ -6,7 +6,7 @@ export default function Navbar() {
             <div className="container-fluid">
                 <div className="navbar-header">
                     <a className="navbar-brand" href="/">
-                        <span className="glyphicon glyphicon-folder-open" style={{ marginRight: "15px" }} aria-hidden="true"></span>File Manager
+                        <span className="glyphicon glyphicon-folder-open" style={{ marginRight: "15px" }} aria-hidden="true"></span>Node Drive
                     </a>
                 </div>
             </div>

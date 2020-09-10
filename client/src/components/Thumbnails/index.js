@@ -55,7 +55,7 @@ export default function Thumbnails(props) {
 
     return (
         props.files.map(file =>{
-            return <Thumbnail key={file.fileName} file={file} deleteFile={props.deleteFile} downloadFile={props.downloadFile} openFolder={props.openFolder}/>
+            return <Thumbnail key={file.name} file={file} deleteFile={props.deleteFile} downloadFile={props.downloadFile} openFolder={props.openFolder}/>
         })
     )
 }

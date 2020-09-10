@@ -1,13 +1,14 @@
 import React from 'react'
 
-export default function BreadcrumbsLink({folder,goToFolder}) {
-
-    function clickHandler() {
-        goToFolder(folder.pathName)
-    }
+export default function BreadcrumbsLink({folder,onClickHandler}) {
 
     return (
-        <li key={folder.name} className={folder.active && 'active'} onClick={clickHandler}><span>{folder.name}</span></li>
+        <li 
+        key={folder.id} 
+        className={folder.active ? 'active' : null} 
+        onClick={() => onClickHandler(folder.id)}>
+            <span>{folder.name}</span>
+        </li>
     )
 
 }

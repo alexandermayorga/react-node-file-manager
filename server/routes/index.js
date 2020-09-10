@@ -4,16 +4,42 @@ const fs = require('fs-extra');
 const path = require('path');
 const multer = require('multer');
 const sharp = require('sharp');
-const {lstatAsync} = require('../middleware/lstatAsync')
+// const {lstatAsync} = require('../middleware/lstatAsync')
 
 const UPLOADS_DIR = path.join(__dirname, '../uploads');
 
+//DB Models
+const { File } = require('./../models/file');
 
-router.get('/files', lstatAsync, function (req, res, next) {
+// router.get('/files', lstatAsync, function (req, res, next) {
 
-    res.json(req.filesInfo)
+//     res.json(req.filesInfo)
+
+// })
+
+router.post('/files', async function (req, res, next) {
+
+  try {
+    const files = await File.find({
+      userID: req.body.userID,
+      parentFolderID: req.body.parentFolderID
+    })
+
+    const folder = (req.body.parentFolderID === "my-drive") ?
+      { filePath: [{ name: "My Drive", id: "my-drive"}]}
+      :
+      await File.findById(req.body.parentFolderID)
+
+    res.send({ files, folder})
+
+  } catch (err) {
+    // console.log(err);
+    res.sendStatus(404).send("Something went wrong")
+
+  }
 
 })
+
 
 router.get('/download', function (req, res, next) {
   const filePath = req.query.filePath;
@@ -88,12 +114,46 @@ router.post('/upload', (req, res) => {
 })
 
 router.post('/new-folder', (req,res)=>{
+  //TODO: add Schema Validation
+  //TODO: add Auth
+
+// console.log(req.body.filePath);
+
+  const buildFolderPath = req.body.filePath
+    .map(path => path.name)
+    .filter(name => name !== "My Drive")
+    .join('/')
+
+  // console.log('[buildFolderPath]',buildFolderPath);
+
+  let newFolderPath = `${UPLOADS_DIR}/${req.body.userID}`;
+  if (buildFolderPath) newFolderPath += `/${buildFolderPath}`
+  newFolderPath += `/${req.body.name}`
   
-  fs.mkdir(`${UPLOADS_DIR}${req.body.newFolderName}`,(err)=>{
+  // console.log(newFolderPath)
+  // return res.status(200).end('Folder Created!')
+
+  fs.mkdir(newFolderPath, { recursive: true },(err)=>{
 
     if (err) console.log(err);
     if (err) return res.status(404).send('There was an error')
-    res.status(200).end()
+
+    const newFolder = {
+      name: req.body.name,
+      userID: req.body.userID,
+      parentFolderID: req.body.parentFolderID,
+      filePath: req.body.filePath,
+      isFolder: true
+    }
+
+    const folder = new File(newFolder);
+
+    folder.save((err)=>{
+      if(err) res.status(404).send('Something went very wrong')
+
+      res.status(200).end('Folder Created!')
+
+    })
   })
 
 })
