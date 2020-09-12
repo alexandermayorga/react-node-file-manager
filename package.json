@@ -32,6 +32,9 @@
     "install-client-dep": "cd ./client && npm install",
     "heroku-postbuild": "npm run install-client-dep && npm run build"
   },
+  "engines": {
+    "node": "10.15.0"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/alexandermayorga/react-node-file-manager.git"
