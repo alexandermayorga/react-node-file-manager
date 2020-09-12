@@ -17,7 +17,7 @@ const Routes = (props) => {
             <Route exact path="/drive"><Redirect to="/drive/my-drive" /></Route>
             <PublicRoute {...props} restricted={true} component={SignIn} exact path="/login" />
             <PublicRoute {...props} restricted={true} component={Register} exact path="/register" />
-            <PublicRoute {...props} restricted={false} component={Home} exact path="/" />
+            {/* <PublicRoute {...props} restricted={false} component={Home} exact path="/" /> */}
             <PublicRoute {...props} restricted={true} component={SignIn} path="*" />
         </Switch>
     )
