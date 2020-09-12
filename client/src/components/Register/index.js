@@ -30,7 +30,7 @@ export default function Register() {
             .then(res => {
                 // console.log("Registration Success!")
                 // localStorage.setItem("userLoggedIn", "true")
-                history.replace(from);
+                history.push("drive/my-drive");
             })
             .catch(err => {
                 console.log("Registration Error!")
