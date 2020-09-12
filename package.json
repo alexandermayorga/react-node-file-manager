@@ -28,7 +28,7 @@
     "server": "nodemon ./server/bin/www",
     "client": "cd ./client && npm start",
     "local": "concurrently \"npm run server\" \"npm run client\"",
-    "build": "cd ./client && npm run build",
+    "build": "cd ./client && npm run build && cd build && cp index.html 200.html",
     "install-client-dep": "cd ./client && npm install",
     "heroku-postbuild": "npm run install-client-dep && npm run build"
   },
