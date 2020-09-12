@@ -1,3 +1,4 @@
 node_modules
 workspace.code-workspace
 project_scope.txt
+.env
