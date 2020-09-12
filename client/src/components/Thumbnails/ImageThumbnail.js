@@ -1,27 +1,18 @@
 import React from 'react'
-import { useHistory } from "react-router-dom";
 import "./style.css";
 
-export default function Thumbnail({ file, deleteFile, downloadFile }) {
-    let history = useHistory();
+export default function ImageThumbnail({ file, deleteFile, downloadFile }) {
 
     const imgPath = !file.isFolder ? file.filePath.map(path => path.name)
         .filter(name => name !== "My Drive")
         .join('/')
         : null;
 
-    console.log(file);
-
-
     function deleteFileHandler() {
-        deleteFile(file.fileName)
+        deleteFile(file)
     }
     function downloadFileHandler() {
         downloadFile(file)
-    }
-
-    function openFolder(){
-        history.push(`/drive/${file._id}`);
     }
 
     return (
@@ -29,21 +20,8 @@ export default function Thumbnail({ file, deleteFile, downloadFile }) {
             <div className="panel panel-default">
 
                 <div className="panel-body">
-                    {
-                        file.isFolder
-                        &&
-                        <div className="thumbnail thumbnail-folder" onDoubleClick={openFolder}>
-                            <span className="glyphicon-thumbnail center-block text-center">
-                                <span className="glyphicon glyphicon-folder-open" aria-hidden="true"></span>
-                            </span>
-                        </div>
-                    }
-                    {
-                        !file.isFolder
-                        && 
-                        <img src={`/uploads/${file.userID}/${imgPath}/${file.name}`} className="img-responsive center-block img-thumbnail"
-                            alt={file.name} />
-                    }
+                    <img src={`/uploads/${file.userID}/${imgPath}/${file.name}`} className="img-responsive center-block img-thumbnail"
+                        alt={file.name} />
 
                     <div className="caption" title={file.name}>
                         <span className="glyphicon glyphicon-folder-open" aria-hidden="true" style={{marginRight: "12px"}}></span>{file.name}
@@ -54,7 +32,7 @@ export default function Thumbnail({ file, deleteFile, downloadFile }) {
                     <div className="row">
                         <div className="col-xs-6">
                             <div className="text-muted">
-                                {file.size && file.size}
+                                {`${file.size / 1000000}kb`}
                             </div>
                         </div>
                         <div className="col-xs-6">

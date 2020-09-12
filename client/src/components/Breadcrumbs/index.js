@@ -18,11 +18,13 @@ export default function Breadcrumbs({filePath}) {
                 filePath.map((folder,i, arr) => {
                     if (folder.id === "my-drive") return home;
                     
-                    folder['active'] = (i === arr.length - 1) ? true : false;
+                    const newFolder = { ...folder }
+
+                    newFolder['active'] = (i === arr.length - 1) ? true : false;
 
                     return <BreadcrumbsLink 
-                            key={folder.name} 
-                            folder={folder} 
+                            key={newFolder.id} 
+                            folder={newFolder} 
                             onClickHandler={folderID => history.push(`/drive/${folderID}`)} 
                             />
                 })

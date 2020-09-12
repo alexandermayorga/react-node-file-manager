@@ -1,6 +1,7 @@
-import React, { useState } from 'react'
-import Thumbnail from './Thumbnail'
-import styles from './styles.module.scss'
+import React from 'react'
+import FolderThumbnail from './FolderThumbnail'
+import ImageThumbnail from './ImageThumbnail'
+import axios from 'axios';
 
 export default function Thumbnails(props) {
 
@@ -53,9 +54,88 @@ export default function Thumbnails(props) {
 
     // }
 
+    function deleteItem(file) {
+        axios.post('/api/delete', { file })
+            .then((res) => { 
+                // console.log(file._id + " Soon to be deleted");
+                props.setLoading(true)
+             })
+            .catch(err => console.log("Error", err))
+    }
+
+    function downloadFolder(file) {
+        axios.get(`/api/download/${file._id}`, {
+            responseType: 'blob' // !important to download the file 
+        })
+            .then((res) => {
+                // 2. Create blob link to download
+                const url = window.URL.createObjectURL(new Blob([res.data]));
+                const link = document.createElement('a');
+                link.href = url;
+                link.setAttribute('download', file.name);
+                // 3. Append to html page
+                document.body.appendChild(link);
+                // 4. Force download
+                link.click();
+                // 5. Clean up and remove the link
+                link.parentNode.removeChild(link);
+
+
+            })
+            .catch((err) => {
+                console.log(err)
+            })
+
+        return;
+    }
+    function downloadFile(file) {
+        // console.log(file);
+
+        axios.get(`/api/download/${file._id}`, {
+            responseType: 'blob' // !important to download the file 
+        })
+            .then((res) => {
+                // console.log(res.data);
+
+                /*
+                  https://medium.com/yellowcode/download-api-files-with-react-fetch-393e4dae0d9e
+                  https://stackoverflow.com/questions/41938718/how-to-download-files-using-axios
+                */
+
+                // 2. Create blob link to download
+                const url = window.URL.createObjectURL(new Blob([res.data]));
+                const link = document.createElement('a');
+                link.href = url;
+                link.setAttribute('download', `${file.name}${file.isFolder ? '.zip' : ''}`);
+                // 3. Append to html page
+                document.body.appendChild(link);
+                // 4. Force download
+                link.click();
+                // 5. Clean up and remove the link
+                link.parentNode.removeChild(link);
+
+            })
+            .catch(err => console.log(err))
+
+    }
+
+
     return (
         props.files.map(file =>{
-            return <Thumbnail key={file.name} file={file} deleteFile={props.deleteFile} downloadFile={props.downloadFile} openFolder={props.openFolder}/>
+            return file.isFolder ? 
+                <FolderThumbnail 
+                    key={file._id} 
+                    file={file} 
+                    deleteFile={deleteItem} 
+                    downloadFile={downloadFile} 
+                />
+                :
+                <ImageThumbnail 
+                    key={file._id} 
+                    file={file} 
+                    deleteFile={deleteItem} 
+                    downloadFile={downloadFile} 
+                />
         })
     )
 }

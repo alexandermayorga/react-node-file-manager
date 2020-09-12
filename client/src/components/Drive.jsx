@@ -13,7 +13,6 @@ function Drive({user}) {
   let {folderID} = useParams();
   const [filePath, setFilePath] = useState([])
   const [currentFiles, setCurrentFiles] = useState()
-  // const [currentDir, setCurrentDir] = useState('/my-drive')
   const [loading, setLoading] = useState(false)
   
   useEffect(() => {
@@ -49,85 +48,67 @@ function Drive({user}) {
 
   }, [loading])
 
-  function fileUpload(input) {
-    let uploadFormHTML = document.getElementById('form_upload');
-    let formData = new FormData(uploadFormHTML);
+  // function downloadFile(file) {
+  //   if (file.isDirectory) {
 
-    axios.post('/api/upload', formData, { params: { filePath: encodeURI(folderID) } })
-      .then((res) => { 
-        input.current.value = '';
-        setLoading(true)
-       })
-      .catch(err => console.log("Upload Error", err))
-  }
+  //     axios.get('api/download-folder', {
+  //       params: {
+  //         filePath: encodeURI(file.filePath),
+  //         fileName: encodeURI(file.fileName)
+  //        },
+  //       responseType: 'blob' // !important to download the file 
+  //     })
+  //       .then((res)=>{
+  //         console.log(res.data)
 
-  function deleteFile(fileName) {
-    axios.post('/api/delete', { path: `${folderID}${fileName}`  })
-      .then((res) => { setLoading(true) })
-      .catch(err => console.log("Error", err))
-  }
-
-  function downloadFile(file) {
-    if (file.isDirectory) {
-
-      axios.get('api/download-folder', {
-        params: {
-          filePath: encodeURI(file.filePath),
-          fileName: encodeURI(file.fileName)
-         },
-        responseType: 'blob' // !important to download the file 
-      })
-        .then((res)=>{
-          console.log(res.data)
-
-          // 2. Create blob link to download
-          const url = window.URL.createObjectURL(new Blob([res.data]));
-          const link = document.createElement('a');
-          link.href = url;
-          link.setAttribute('download', file.fileName);
-          // 3. Append to html page
-          document.body.appendChild(link);
-          // 4. Force download
-          link.click();
-          // 5. Clean up and remove the link
-          link.parentNode.removeChild(link);
+  //         // 2. Create blob link to download
+  //         const url = window.URL.createObjectURL(new Blob([res.data]));
+  //         const link = document.createElement('a');
+  //         link.href = url;
+  //         link.setAttribute('download', file.fileName);
+  //         // 3. Append to html page
+  //         document.body.appendChild(link);
+  //         // 4. Force download
+  //         link.click();
+  //         // 5. Clean up and remove the link
+  //         link.parentNode.removeChild(link);
 
 
-        })
-        .catch((err) => {
-          console.log(err)
-        })
+  //       })
+  //       .catch((err) => {
+  //         console.log(err)
+  //       })
 
-      return;
-    }
+  //     return;
+  //   }
     
-    axios.get('api/download', {
-      params: { filePath: encodeURI(file.filePath) },
-      responseType: 'blob' // !important to download the file 
-    })
-      .then((res) => {
+  //   axios.get('api/download', {
+  //     params: { filePath: encodeURI(file.filePath) },
+  //     responseType: 'blob' // !important to download the file 
+  //   })
+  //     .then((res) => {
 
-        /*
-          https://medium.com/yellowcode/download-api-files-with-react-fetch-393e4dae0d9e
-          https://stackoverflow.com/questions/41938718/how-to-download-files-using-axios
-        */
+  //       /*
+  //         https://medium.com/yellowcode/download-api-files-with-react-fetch-393e4dae0d9e
+  //         https://stackoverflow.com/questions/41938718/how-to-download-files-using-axios
+  //       */
 
-        // 2. Create blob link to download
-        const url = window.URL.createObjectURL(new Blob([res.data]));
-        const link = document.createElement('a');
-        link.href = url;
-        link.setAttribute('download', file.fileName);
-        // 3. Append to html page
-        document.body.appendChild(link);
-        // 4. Force download
-        link.click();
-        // 5. Clean up and remove the link
-        link.parentNode.removeChild(link);
+  //       // 2. Create blob link to download
+  //       const url = window.URL.createObjectURL(new Blob([res.data]));
+  //       const link = document.createElement('a');
+  //       link.href = url;
+  //       link.setAttribute('download', file.fileName);
+  //       // 3. Append to html page
+  //       document.body.appendChild(link);
+  //       // 4. Force download
+  //       link.click();
+  //       // 5. Clean up and remove the link
+  //       link.parentNode.removeChild(link);
         
-      })
-      .catch(err => console.log(err))
+  //     })
+  //     .catch(err => console.log(err))
     
-  }
+  // }
 
   return (
     <Layout>
@@ -136,7 +117,12 @@ function Drive({user}) {
 
           <div className="col-sm-6">
             <div className="well">
-              <UploadImage fileUpload={fileUpload} />
+              <UploadImage
+                userID={user.id}
+                setLoading={setLoading}
+                parentFolderID={folderID}
+                filePath={filePath}
+              />
             </div>
           </div>
 
@@ -208,8 +194,9 @@ function Drive({user}) {
           <div className="row">
             <FilesContainer
               files={currentFiles}
-              deleteFile={deleteFile}
-              downloadFile={downloadFile}
+              setLoading={setLoading}
+              // deleteFile={deleteFile}
+              // downloadFile={downloadFile}
             />
           </div>
         </div>

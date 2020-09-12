@@ -57,7 +57,7 @@ export default function FilesContainer({
 
     const folders = files.filter(item => item.isFolder);
     const newFiles = files.filter(item => !item.isFolder);
-
+ 
     return (
         <>
             <div className="col-sm-12">

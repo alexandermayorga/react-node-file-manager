@@ -46,17 +46,17 @@ router.post('/', function (req, res, next) {
             `,
             };
             //ES6
-            sgMail
-                .send(msg)
-                .then(() => {
-                    // console.log("Message sent!");
-                }, error => {
-                    //TODO: Email was not sent. Handle this error
-                    // console.error(error);
+            // sgMail
+            //     .send(msg)
+            //     .then(() => {
+            //         // console.log("Message sent!");
+            //     }, error => {
+            //         //TODO: Email was not sent. Handle this error
+            //         // console.error(error);
 
-                    // if (error.response) return console.error(error.response.body)
+            //         // if (error.response) return console.error(error.response.body)
 
-                });
+            //     });
 
 
             res

@@ -21,10 +21,11 @@ export default function Login({auth}) {
         axios.post('api/login', user)
             .then(res => {
                 // console.log("Login Success!")
-                history.replace(from);
+                history.push("drive/my-drive");
+                // history.replace(from);
             })
             .catch(error => {
-                // console.log("Login Error!")
+                console.log("Login Error!")
                 // console.log(error.response.data)
                 console.log(error)
             })

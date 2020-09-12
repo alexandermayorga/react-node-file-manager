@@ -1,7 +1,8 @@
 import React, {useRef} from 'react'
 import ButtonGroup from "./ui/ButtonGroup";
+import axios from 'axios';
 
-export default function UploadImage({fileUpload}) {
+export default function UploadImage({ parentFolderID, filePath, setLoading, userID}) {
     const fileInput = useRef()
 
     function onSubmitHandler(e) {
@@ -10,8 +11,32 @@ export default function UploadImage({fileUpload}) {
         fileUpload(fileInput)
     }
 
+    function fileUpload(input) {
+        let uploadFormHTML = document.getElementById('form_upload');
+        let formData = new FormData(uploadFormHTML);
+
+        formData.append('userID', userID);
+        formData.append('parentFolderID', parentFolderID);
+        formData.append('filePath', JSON.stringify({filePath}));
+
+        axios.post('/api/upload', formData, {
+            headers: {
+                'content-type': 'multipart/form-data'
+            }
+        })
+            .then((res) => {
+                input.current.value = '';
+                setLoading(true)
+            })
+            .catch(err => console.log("Upload Error", err))
+    }
+
+    // function inputChangeHandler(){
+    //     console.log('[Form Changed!]');
+    // }
+
     return (
-        <form id="form_upload" onSubmit={onSubmitHandler}>
+        <form id="form_upload" onSubmit={onSubmitHandler} >
             <div className="form-group">
                 <label htmlFor="images">Upload Images</label>
                 <input 
@@ -20,6 +45,7 @@ export default function UploadImage({fileUpload}) {
                     multiple 
                     ref={fileInput} 
                     accept="image/png, image/jpeg"
+                    // onChange={inputChangeHandler}
                 />
                 <p className="help-block">Only ".jpg | .png" allowed</p>
             </div>

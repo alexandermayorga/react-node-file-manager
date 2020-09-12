@@ -7,9 +7,9 @@ const PrivateRoutes = ({
     component: Comp,
     ...rest
 }) => {
-    
+
     return <Route {...rest} component={(props) => (
-        !auth.checking ? 
+        !auth.checking ?
             (
                 auth.loggedIn ? <Comp {...props} user={user} />
                     :

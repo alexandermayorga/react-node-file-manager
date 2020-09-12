@@ -2,13 +2,13 @@ const createError = require('http-errors');
 const config = require('./config');
 const express = require('express');
 const path = require('path');
-const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const zip = require('express-easy-zip');
 
 const indexRouter = require('./routes/index');
+const uploadRouter = require('./routes/upload');
 const registerRouter = require('./routes/register');
 const loginRouter = require('./routes/login');
 const logoutRouter = require('./routes/logout');
@@ -42,6 +42,7 @@ const { auth } = require('./middleware/auth');
 
 // ROUTES
 app.use('/api', indexRouter);
+app.use('/api/upload', uploadRouter);
 app.use('/api/logout', auth, logoutRouter);
 app.use('/api/login', auth, loginRouter);
 app.use('/api/authenticate', auth, authenticateRouter);
