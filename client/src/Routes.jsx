@@ -1,8 +1,8 @@
 import React from 'react'
 import { Switch, Route, Redirect } from "react-router-dom";
 
-import PrivateRoute from "./components/authRoutes/PrivateRoutes";
-import PublicRoute from "./components/authRoutes/PublicRoutes";
+import PrivateRoute from "./authRoutes/PrivateRoutes";
+import PublicRoute from "./authRoutes/PublicRoutes";
 
 import Home from './components/Home';
 import SignIn from './components/Login';

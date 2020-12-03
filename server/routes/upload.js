@@ -28,9 +28,13 @@ router.post('/', (req, res) => {
             if (!file) return cb(new Error('No File was sent for uploading'))
             const extName = path.extname(file.originalname);
 
-            if (extName !== '.jpg' && extName !== '.png') {
-                // console.log('Extension Error')
-                return cb(new Error('Only JPG|PNG allowed'))
+            if (
+              extName !== ".jpg" &&
+              extName !== ".png" &&
+              extName !== ".jpeg"
+            ) {
+              // console.log('Extension Error')
+              return cb(new Error("Only JPG|PNG allowed"));
             }
             cb(null, true)
         }
