@@ -4,9 +4,11 @@ import Breadcrumbs from './Breadcrumbs';
 import CreateNewFolder from './CreateNewFolder';
 import UploadImage from './UploadImage';
 import Loader from "./ui/Loader";
-import FilesContainer from "./FilesContainer";
 import Layout from './hoc/Layout';
 import DropZone from "./DropZone";
+import ThumbnailList from "./Thumbnails";
+
+import { deleteItem } from "../api";
 
 import { useParams } from "react-router-dom";
 
@@ -14,7 +16,7 @@ function Drive({user}) {
   let {folderID} = useParams();
   const [filePath, setFilePath] = useState([])
   const [currentFiles, setCurrentFiles] = useState([])
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(true)
   
   useEffect(() => {
     let cancel;
@@ -50,6 +52,15 @@ function Drive({user}) {
 
   }, [loading])
 
+  function handleFileDelete(file) {
+    deleteItem(file,(err, res)=>{
+      if(err) return alert('There was an issue deleting your file, please try again.');
+
+      const newCurrentFiles = currentFiles.filter(cFile => cFile._id !== file._id)
+      setCurrentFiles(newCurrentFiles)
+
+    })
+  }
 
   return (
     <Layout>
@@ -83,22 +94,17 @@ function Drive({user}) {
         <div className="row">
 
           <div className="col-sm-12">
-            {
-              filePath.length > 0
-              &&
-              <Breadcrumbs filePath={filePath} />
-            }
+            <Breadcrumbs filePath={filePath} />
           </div>
 
         </div>
       </div>{/* container */}
 
-      {
-        !currentFiles
-        &&
-        <div className="container">
-          <div className="row">
-            <div className="col-sm-12">
+      <div className="container-fluid">
+        <div className="row">
+          <div className="col-sm-12">
+            {
+            loading ?
               <div className="loader_wrapper"
                 style={{
                   display: "flex",
@@ -110,15 +116,7 @@ function Drive({user}) {
               >
                 <Loader />
               </div>
-            </div>
-
-          </div>
-        </div>
-      }
-
-      <div className="container-fluid">
-        <div className="row">
-          <div className="col-sm-12">
+            :
             <DropZone 
               userID={user.id}
               setLoading={setLoading}
@@ -126,17 +124,41 @@ function Drive({user}) {
               filePath={filePath}
             >
               {
-                currentFiles && currentFiles.length < 1 ?
+                currentFiles.length < 1 ?
                 <>
                   Folder is Empty...
                 </>
                 :
-                <FilesContainer
-                  files={currentFiles}
-                  setLoading={setLoading}
-                />
+                <div className="row">
+                    {currentFiles.filter(item => item.isFolder).length > 0 &&
+                    <div className="col-sm-12">
+                        <div className="h5" style={{ marginBottom: "20px" }}>Folders</div>
+                        <div className="row">
+                            <ThumbnailList 
+                              files={currentFiles.filter(item => item.isFolder)} 
+                              deleteItem={handleFileDelete} 
+                            />
+                        </div>
+                    </div>
+                    }
+
+                    {currentFiles.filter(item => !item.isFolder).length > 0 &&
+                    <div className="col-sm-12">
+                        <div className="h5" style={{ marginBottom: "20px" }}>Files</div>
+
+                        <div className="row">
+                            <ThumbnailList 
+                              files={currentFiles.filter(item => !item.isFolder)} 
+                              deleteItem={handleFileDelete} 
+                            />
+                        </div>
+                    </div>
+                    }
+                </div>
               }
             </DropZone>
+            }
+
             </div>
         </div>
       </div>
@@ -145,67 +167,3 @@ function Drive({user}) {
 }
 
 export default Drive;
-
-
-
-  // function downloadFile(file) {
-  //   if (file.isDirectory) {
-
-  //     axios.get('api/download-folder', {
-  //       params: {
-  //         filePath: encodeURI(file.filePath),
-  //         fileName: encodeURI(file.fileName)
-  //        },
-  //       responseType: 'blob' // !important to download the file 
-  //     })
-  //       .then((res)=>{
-  //         console.log(res.data)
-
-  //         // 2. Create blob link to download
-  //         const url = window.URL.createObjectURL(new Blob([res.data]));
-  //         const link = document.createElement('a');
-  //         link.href = url;
-  //         link.setAttribute('download', file.fileName);
-  //         // 3. Append to html page
-  //         document.body.appendChild(link);
-  //         // 4. Force download
-  //         link.click();
-  //         // 5. Clean up and remove the link
-  //         link.parentNode.removeChild(link);
-
-
-  //       })
-  //       .catch((err) => {
-  //         console.log(err)
-  //       })
-
-  //     return;
-  //   }
-    
-  //   axios.get('api/download', {
-  //     params: { filePath: encodeURI(file.filePath) },
-  //     responseType: 'blob' // !important to download the file 
-  //   })
-  //     .then((res) => {
-
-  //       /*
-  //         https://medium.com/yellowcode/download-api-files-with-react-fetch-393e4dae0d9e
-  //         https://stackoverflow.com/questions/41938718/how-to-download-files-using-axios
-  //       */
-
-  //       // 2. Create blob link to download
-  //       const url = window.URL.createObjectURL(new Blob([res.data]));
-  //       const link = document.createElement('a');
-  //       link.href = url;
-  //       link.setAttribute('download', file.fileName);
-  //       // 3. Append to html page
-  //       document.body.appendChild(link);
-  //       // 4. Force download
-  //       link.click();
-  //       // 5. Clean up and remove the link
-  //       link.parentNode.removeChild(link);
-        
-  //     })
-  //     .catch(err => console.log(err))
-    
-  // }

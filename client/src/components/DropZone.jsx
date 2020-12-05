@@ -1,10 +1,13 @@
 import React, {useState} from 'react'
 import axios from 'axios';
 import classes from './DropZone.module.css'
+import GlyphIcon from './ui/GlyphIcon'
+import Loader from './ui/Loader';
 
 export default function DropZone({userID,setLoading,parentFolderID,filePath,children}) {
 
     const [draggingOver, setDraggingOver] = useState(false)
+    const [uploading, setUploading] = useState(false)
 
     function handleDragOver(e) {
         e.preventDefault();
@@ -19,6 +22,10 @@ export default function DropZone({userID,setLoading,parentFolderID,filePath,chil
     }
     function handleOnDrop(e) {
         e.preventDefault();
+
+        setUploading(true)
+        setDraggingOver(false)
+
         let files = [...e.dataTransfer.files];
         // console.log(files);
         let formData = new FormData()
@@ -35,17 +42,21 @@ export default function DropZone({userID,setLoading,parentFolderID,filePath,chil
         // for (var value of formData.values()) {
         //     console.log(value); 
         // }
-        
-        alert('Uploading')
-        setDraggingOver(false)
 
         axios.post('/api/upload', formData, {
             headers: {
                 'content-type': 'multipart/form-data'
-            }
+            },
+            // onUploadProgress: function(progressEvent) {
+            // var percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total)
+            // console.log(percentCompleted)
+            // }
         })
-            .then( res => setLoading(true) )
-            .catch(err => {
+            .then( res => {
+                setUploading(false)
+                setLoading(true)
+            } )
+            .catch( err => {
                 alert("Upload Error")
                 console.log("Upload Error", err)
             })
@@ -58,32 +69,44 @@ export default function DropZone({userID,setLoading,parentFolderID,filePath,chil
             onDragLeave={handleDragLeave}
             onDrop={handleOnDrop}
             onDragOver={handleDragOver}
-            className={`clearfix ${draggingOver && classes.dropZone}`}
+            className={`clearfix ${(draggingOver || uploading) && classes.dropZone}`}
         >
             {
-                draggingOver ? 
-                    <>
-                        <DropBox/>
-                        <DropHere/>
-                    </>
-                    :
-                    children
+                showCurrentState(draggingOver,uploading,children)
             }
         </div>
     )
 }
 
 
+function showCurrentState(draggingOver,uploading,children) {
+    if (draggingOver) return <DropBox/>
+    if (uploading) return <Uploading/>
+    return children
+}
+
+
 function DropBox(){
     return (
-        <div className={classes.dropZone__box}></div>
+        <>
+            <div className={classes.dropZone__box}></div>
+            <div className={classes.dropZone__visualCue}>
+                <div className="text-center" style={{fontSize: "12rem", lineHeight:"14rem"}}><GlyphIcon icon="cloud-upload"/></div>
+                <div className="text-center"  style={{fontSize: "2rem"}}>Drop Files Here</div>
+            </div>
+        </>
     )
 }
 
-function DropHere(){
+function Uploading(){
     return (
-        <div className={classes.dropZone__visualCue}>
-            <span className='glyphicon glyphicon-cloud' aria-hidden="true"></span> Drop Files Here
-        </div>
+        <>
+            <div className={classes.dropZone__box}></div>
+            <div className={classes.dropZone__visualCue}>
+                <div className="text-center" style={{fontSize: "12rem", lineHeight:"14rem"}}><GlyphIcon icon="cloud-upload"/></div>
+                <p className="text-center"  style={{fontSize: "2rem"}}>File(s) are Uploading...</p>
+                <div className="text-center"><Loader customStyle={{fontSize: "2.5rem"}}/></div>
+            </div>
+        </>
     )
 }

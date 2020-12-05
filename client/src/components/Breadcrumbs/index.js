@@ -13,23 +13,30 @@ export default function Breadcrumbs({filePath}) {
     )
 
     return (
-        <ol className="breadcrumb">
-            {
-                filePath.map((folder,i, arr) => {
-                    if (folder.id === "my-drive") return home;
-                    
-                    const newFolder = { ...folder }
+      <ol className="breadcrumb">
+        {filePath.length < 1 ? (
+          <li className="active">
+            <span>...</span>
+          </li>
+        ) : (
+          filePath.map((folder, i, arr) => {
+            if (folder.id === "my-drive") return home;
 
-                    newFolder['active'] = (i === arr.length - 1) ? true : false;
+            const newFolder = { ...folder };
 
-                    return <BreadcrumbsLink 
-                            key={newFolder.id} 
-                            folder={newFolder} 
-                            onClickHandler={folderID => history.push(`/drive/${folderID}`)} 
-                            />
-                })
-            }
-            
-        </ol>
-    )
+            newFolder["active"] = i === arr.length - 1 ? true : false;
+
+            return (
+              <BreadcrumbsLink
+                key={newFolder.id}
+                folder={newFolder}
+                onClickHandler={(folderID) =>
+                  history.push(`/drive/${folderID}`)
+                }
+              />
+            );
+          })
+        )}
+      </ol>
+    );
 }
