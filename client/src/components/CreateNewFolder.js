@@ -1,9 +1,10 @@
-import React, { useRef } from 'react'
+import React, { useRef, useContext } from "react";
 import ButtonGroup from "./ui/ButtonGroup";
-import axios from 'axios';
+import { FetchContext } from "../context/FetchContext";
 
-export default function CreateNewFolder({ userID, parentFolderID, filePath, setLoading}) {
+export default function CreateNewFolder({ parentFolderID, filePath, setLoading}) {
     const newFolderName = useRef();
+    const { authAxios } = useContext(FetchContext);
 
     function createNewFolder(e) {
         e.preventDefault();
@@ -11,19 +12,19 @@ export default function CreateNewFolder({ userID, parentFolderID, filePath, setL
 
         const newFolder = {
             name: newFolderName.current.value,
-            userID,
             parentFolderID,
             filePath
         }
 
         // console.log(newFolder)
 
-        axios.post('/api/new-folder', newFolder)
-          .then((res) => { 
-            newFolderName.current.value = '';
-            setLoading(true)
-           })
-          .catch(err => console.log(err))
+        authAxios
+          .post("new-folder", newFolder)
+          .then((res) => {
+            newFolderName.current.value = "";
+            setLoading(true);
+          })
+          .catch((err) => console.log(err));
     }
 
 

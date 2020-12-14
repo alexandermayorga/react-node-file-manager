@@ -8,30 +8,11 @@ const UPLOADS_DIR = path.join(__dirname, '../uploads');
 
 //DB Models
 const { File } = require('./../models/file');
-// const { resolve } = require('path');
-
-// router.get('/files', lstatAsync, function (req, res, next) {
-
-//     res.json(req.filesInfo)
-
-// })
 
 router.post('/files', async function (req, res, next) {
-  //TODO: Convert to one Request
   try {
-    // const files = await File.find({
-    //   userID: req.body.userID,
-    //   parentFolderID: req.body.parentFolderID
-    // })
-
-    // const folder = (req.body.parentFolderID === "my-drive") ?
-    //   { filePath: [{ name: "My Drive", id: "my-drive"}]}
-    //   :
-    //   await File.findById(req.body.parentFolderID)
-
-
     const query = [{
-      userID: req.body.userID,
+      userID: req.user.sub,
       parentFolderID: req.body.parentFolderID
     }]
 
@@ -53,17 +34,16 @@ router.post('/files', async function (req, res, next) {
 
   } catch (err) {
     console.log(err);
-    res.sendStatus(404).send("Something went wrong")
+    return res.status(400).json({ message: "Something went wrong." });
 
   }
 
 })
 
 
-router.get('/download/:id', async function (req, res, next) {
+router.post('/download', async function (req, res, next) {
   try {
-
-    const file = await File.findById(req.params.id)
+    const file = await File.findById(req.body.id);
 
     if (!file.isFolder) return res.download(getFilePath(file))
 
@@ -99,7 +79,7 @@ router.post('/new-folder', (req,res)=>{
 
   const folder = {
     filePath: req.body.filePath,
-    userID: req.body.userID,
+    userID: req.user.sub,
     name: req.body.name,
   }
   
@@ -109,7 +89,7 @@ router.post('/new-folder', (req,res)=>{
 
     const dbFolder = {
       name: req.body.name,
-      userID: req.body.userID,
+      userID: req.user.sub,
       parentFolderID: req.body.parentFolderID,
       filePath: req.body.filePath,
       isFolder: true
@@ -132,7 +112,7 @@ router.post('/delete', (req, res) => {
   // Delete File(s) from server
   fs.remove(`${getFilePath(file)}`, err => {
     if (err) console.log(err);
-    if (err) return res.status(404).send('There was an error')
+    if (err) return res.status(400).json({ message: "There was an error removing the file" });
 
     // file/folder has been removed
     // Delete File from DB
@@ -154,8 +134,11 @@ router.post('/delete', (req, res) => {
   })
 
   const callback = (err) => {
-    if(err) return res.sendStatus(404).end('Error')
-    res.sendStatus(200).end()
+    if(err) return res
+      .status(400)
+      .json({ message: "There was an error deleting the file" });
+    
+    res.json({ message: "File has been removed" });
   }
 
 

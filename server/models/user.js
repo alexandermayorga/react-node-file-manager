@@ -38,7 +38,7 @@ const userSchema = mongoose.Schema({
 	},
 	refreshTokens: {
 		type: [String],
-		required: true,
+		required: false,
 		default: []
 	},
     active: {
@@ -66,16 +66,25 @@ userSchema.pre('save',function(next){ //ES5 Function
 })
 
 //Compares a password provided by the user with the one in the db
-userSchema.methods.comparePassword = function( candidatePassword, cb ){
-	bcrypt.compare( candidatePassword, this.password, function( err, isMatch ){
-		if(err) return cb(err);
-		cb( null, isMatch );
-	})
+userSchema.methods.comparePassword = function ( candidatePassword ){
+	return bcrypt.compare( candidatePassword, this.password )
 }
+userSchema.methods.genAccessToken = function () {
+  const user = this;
+  return jwt.sign(
+    {
+      //   userId: user._id.toHexString(),
+      sub: user._id,
+      email: user.email,
+      iss: "api.reactFileManager",
+      aud: "api.reactFileManager",
+    },
+    config.ACCESS_TOKEN_SECRET,
+    { algorithm: "HS256", expiresIn: "1h" }
+  );
+};
 
-userSchema.methods.comparePasswordAsync = function (candidatePassword) {
-	return bcrypt.compare(candidatePassword, this.password)
-}
+
 
 userSchema.methods.genRefreshToken = function (cb) {
 	let user = this;
@@ -103,13 +112,6 @@ userSchema.methods.genRefreshToken = function (cb) {
 		return cb(error);
 	})
 
-}
-
-userSchema.methods.genAccessToken = function () {
-	const user = this;
-	let refreshToken = jwt.sign({ userId: user._id.toHexString() }, config.ACCESS_TOKEN_SECRET, { expiresIn: '10m' });
-
-	return refreshToken;
 }
 
 userSchema.statics.refreshAccessToken = function (refreshToken,cb) {

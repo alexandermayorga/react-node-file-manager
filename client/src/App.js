@@ -1,65 +1,98 @@
-import React, { useState, useEffect } from 'react';
-import { useLocation } from "react-router-dom";
-import axios from "axios";
+import React, { lazy, Suspense, useContext } from "react";
+import { AuthContext, AuthProvider } from "./context/AuthContext";
+import { Switch, Route, Redirect } from "react-router-dom";
 
-import Routes from './Routes';
+import { FetchProvider } from './context/FetchContext';
+
+import Home from "./components/Home";
+import SignIn from "./components/Login";
+import Register from "./components/Register";
+
+const Drive = lazy(() => import("./components/Drive"));
+
+const PrivateRoute = ({ component: Comp, ...rest }) => {
+  const { isAuthenticated } = useContext(AuthContext);
+  return (
+    <Route
+      {...rest}
+      component={() =>
+        isAuthenticated() ? (
+          <Comp/>
+        ) : (
+          <Redirect to="/login" />
+        )
+      }
+    />
+    
+  );
+};
+
+const PublicRoute = ({ component: Comp, ...rest }) => {
+    const { isAuthenticated } = useContext(AuthContext);
+  return (
+    <Route
+      {...rest}
+      component={() =>
+        rest.restricted ? (
+          !isAuthenticated() ? (
+            <Comp />
+          ) : (
+            <Redirect to="/drive/my-drive" />
+          )
+        ) : (
+          <Comp />
+        )
+      }
+    />
+  );
+};
+
+const AppRoutes = (props) => {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <Switch>
+        <PrivateRoute
+          {...props}
+          component={Drive}
+          exact
+          path="/drive/:folderID"
+        />
+        <Route exact path="/drive">
+          <Redirect to="/drive/my-drive" />
+        </Route>
+        <PublicRoute
+          {...props}
+          restricted={true}
+          component={SignIn}
+          exact
+          path="/login"
+        />
+        <PublicRoute
+          {...props}
+          restricted={true}
+          component={Register}
+          exact
+          path="/register"
+        />
+        <PublicRoute
+          {...props}
+          restricted={false}
+          component={Home}
+          exact
+          path="/"
+        />
+        {/* <PublicRoute {...props} restricted={true} component={SignIn} path="*" /> */}
+      </Switch>
+    </Suspense>
+  );
+};
 
 export default function App() {
-    const [auth, setAuth] = useState({
-        loggedIn: false,
-        checking: true
-    })
-    const [user, setUser] = useState()
-    let location = useLocation();
-
-    useEffect(() => {
-        let cancel
-        axios.post('/api/authenticate', {
-            cancelToken: new axios.CancelToken(c => cancel = c)
-        })
-            .then(res => {
-                // console.log("Authenticated Request!")
-                setUser(res.data)
-                setAuth({
-                    loggedIn: true,
-                    checking: false
-                })
-            })
-            .catch(err => {
-                // console.log("There was an error Authenticating")
-                console.log(err)
-                setAuth({
-                    loggedIn: false,
-                    checking: false
-                })
-            })
-        //Cancel Old requests if new requests are made. This way old data doesn't load if old request finishes after new request
-        return () => cancel(); 
-
-    }, [])
-
-    useEffect(() => {
-        let cancel
-        axios.post('/api/authenticate', {
-            cancelToken: new axios.CancelToken(c => cancel = c)
-        })
-            .then(res => {
-                console.log("Authenticated Request!")
-            })
-            .catch(err => {
-                console.log("There was an error Authenticating")
-                console.log(err)
-                setAuth({
-                    loggedIn: false,
-                    checking: false
-                })
-            })
-        //Cancel Old requests if new requests are made. This way old data doesn't load if old request finishes after new request
-        return () => cancel(); 
-
-    }, [location])
-
     return (
-        <Routes auth={auth} user={user}/>
-    )
+      <AuthProvider>
+        <FetchProvider>
+          <AppRoutes />
+        </FetchProvider>
+      </AuthProvider>
+    );
 }

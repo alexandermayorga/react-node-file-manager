@@ -24,7 +24,7 @@ export default function ImageThumbnail({ file, onDownloadFile, onDeleteItem }) {
       <div className="panel panel-default">
         <div className="panel-body">
           <img
-            src={`/uploads/${file.userID}/${imgPath}/${file.name}`}
+            src={`/uploads/${file.userID}/${imgPath && `${imgPath}/` }${file.name}`}
             className="img-responsive center-block img-thumbnail"
             alt={file.name}
           />

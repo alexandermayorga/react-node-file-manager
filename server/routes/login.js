@@ -1,41 +1,54 @@
 var express = require('express');
 var router = express.Router();
+const jwtDecode = require("jwt-decode");
 
 //DB Models
 const { User } = require('./../models/user');
 
-router.post('/', function (req, res, next) {
-    const badRequest = 'There was an error with your request. Please check your information and try again.';
+router.post('/', async (req, res, next) => {
+    try {
+      const { email, password } = req.body;
 
-    if (Object.entries(req.body).length === 0 || !req.body.email) return res.status(400).send('No info was sent for Authorization')
+      const user = await User.findOne({ email }).exec();
 
-    //Query the database
-    User.findOne({ 'email': req.body.email }, (err, user) => {
-        if (err) return res.status(400).end(badRequest)
-        
-        if (!user) return res.status(400).end('Auth Failed. No User found with that email.');
+      if (!user) {
+        return res.status(403).json({
+          message: "Wrong email or password.",
+        });
+      }
 
-        //Check if password match
-        user.comparePassword(req.body.password, function (err, isMatch) {
-            if (err) return res.status(400).end(badRequest)
-            
-            if (!isMatch) return res.status(401).end('Wrong password.')
-            
+      const passwordValid = await user.comparePassword(password);
 
-            user.genRefreshToken((err, user, refreshToken, accessToken) => {
-                if (err) res.status(400).end(badRequest)
+      if (passwordValid) {
+        const { firstname, lastname, email } = user;
+        const userInfo = { firstname, lastname, email };
 
-                //TODO: You must decide how you want to handle successful logins. 
-                res
-                    .cookie('refreshToken', refreshToken, { httpOnly: true, expires: new Date(Date.now() + 24 * 3600000) })
-                    .cookie('accessToken', accessToken, { httpOnly: true, expires: new Date(Date.now() + (60 * 15000)) })
-                    .status(200)
-                    .end('Logged In!');
-                
-            })
-        })
-    })
+        const token = user.genAccessToken();
 
+        const decodedToken = jwtDecode(token);
+        const expiresAt = decodedToken.exp;
+
+        res.cookie("accessToken", token, {
+          httpOnly: true,
+        });
+
+        res.json({
+          message: "Login successful!",
+          token,
+          userInfo,
+          expiresAt,
+        });
+      } else {
+        res.status(403).json({
+          message: "Wrong email or password.",
+        });
+      }
+    } catch (err) {
+      console.log(err);
+      return res
+        .status(400)
+        .json({ message: "Something went wrong. Try to log in again." });
+    }
 
 });
 

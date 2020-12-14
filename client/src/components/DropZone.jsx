@@ -1,10 +1,11 @@
-import React, {useState} from 'react'
-import axios from 'axios';
+import React, {useState,useContext} from 'react'
 import classes from './DropZone.module.css'
 import GlyphIcon from './ui/GlyphIcon'
 import Loader from './ui/Loader';
+import { FetchContext } from "../context/FetchContext";
 
-export default function DropZone({userID,setLoading,parentFolderID,filePath,children}) {
+export default function DropZone({setLoading,parentFolderID,filePath,children}) {
+    const { authAxios } = useContext(FetchContext);
 
     const [draggingOver, setDraggingOver] = useState(false)
     const [uploading, setUploading] = useState(false)
@@ -29,12 +30,11 @@ export default function DropZone({userID,setLoading,parentFolderID,filePath,chil
         let files = [...e.dataTransfer.files];
         // console.log(files);
         let formData = new FormData()
-        formData.append('userID', userID);
         formData.append('parentFolderID', parentFolderID);
         formData.append('filePath', JSON.stringify({filePath}));
 
         files.map( file => {
-            if(file.type !== 'image/jpeg' && file.type !=="image/png") return
+            if(file.type !== 'image/jpeg' && file.type !=="image/png") return null;
             return formData.append('images', file, file.name)
         } )
 
@@ -43,7 +43,7 @@ export default function DropZone({userID,setLoading,parentFolderID,filePath,chil
         //     console.log(value); 
         // }
 
-        axios.post('/api/upload', formData, {
+        authAxios.post('upload', formData, {
             headers: {
                 'content-type': 'multipart/form-data'
             },
@@ -58,7 +58,7 @@ export default function DropZone({userID,setLoading,parentFolderID,filePath,chil
             } )
             .catch( err => {
                 alert("Upload Error")
-                console.log("Upload Error", err)
+                console.log("Upload Error", err.response)
             })
 
     }

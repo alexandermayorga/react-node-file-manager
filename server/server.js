@@ -1,19 +1,26 @@
 const createError = require('http-errors');
 const config = require('./config');
 const express = require('express');
-const path = require('path');
+const cors = require("cors");
+const logger = require('morgan');
 const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
-const logger = require('morgan');
+const path = require('path');
+const jwtDecode = require("jwt-decode");
+const jwt = require("express-jwt");
 const zip = require('express-easy-zip');
 
+const csrf = require("csurf");
+const csrfProtection = csrf({
+  cookie: true,
+});
+
+//Routers
 const indexRouter = require('./routes/index');
 const uploadRouter = require('./routes/upload');
 const registerRouter = require('./routes/register');
 const loginRouter = require('./routes/login');
 const logoutRouter = require('./routes/logout');
-const authenticateRouter = require('./routes/authenticate');
-
 
 const app = express();
 
@@ -26,27 +33,56 @@ mongoose.connect(config.DATABASE, {
     useCreateIndex: true
 });
 
+app.use(cors());
 app.use(logger('dev'));
+app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(cookieParser());
-app.use(express.urlencoded({ extended: false }));
-app.use('/uploads',express.static(path.join(__dirname, 'uploads')));
 app.use(zip());
 
 // if(process.env.NODE_ENV === 'production'){
     app.use(express.static(path.join(__dirname, '../client/build')));
 // }
 
-//Middleware
-const { auth } = require('./middleware/auth');
-
 // ROUTES
-app.use('/api', indexRouter);
-app.use('/api/upload', uploadRouter);
-app.use('/api/logout', auth, logoutRouter);
-app.use('/api/login', auth, loginRouter);
-app.use('/api/authenticate', auth, authenticateRouter);
-app.use('/api/register', auth, registerRouter);
+app.use('/api/login', loginRouter);
+app.use('/api/register', registerRouter);
+app.use('/api/logout', logoutRouter);
+
+
+const attachUser = (req, res, next) => {
+    const token = req.cookies.accessToken;
+    if (!token)
+    return res.status(401).json({ message: "Authentication invalid" });
+    
+    const decodedToken = jwtDecode(token);
+    if (!decodedToken)
+    return res
+    .status(401)
+    .json({ message: "There was a problem authorizing the request" });
+    
+    req.user = decodedToken;
+    next();
+};
+
+const checkJwt = jwt({
+    secret: config.ACCESS_TOKEN_SECRET,
+    issuer: "api.reactFileManager",
+    audience: "api.reactFileManager",
+    algorithms: ["HS256"],
+    getToken: (req) => req.cookies.accessToken,
+});
+
+app.use(csrfProtection);
+app.get("/api/csrf-token", (req, res) => {
+    res.json({ csrfToken: req.csrfToken() });
+});
+
+app.use(attachUser);
+
+app.use('/api', checkJwt, indexRouter);
+app.use('/api/upload', checkJwt, uploadRouter);
+app.use("/uploads", checkJwt, express.static(path.join(__dirname, "uploads")));
 
 
 // The "catchall" handler: for any request that doesn't
@@ -54,6 +90,16 @@ app.use('/api/register', auth, registerRouter);
 app.get('/*', (req, res) => {
     res.sendFile(path.join(__dirname + '../client/build/index.html'));
 });
+
+
+// CSRF error handler
+app.use(function (err, req, res, next) {
+  if (err.code !== 'EBADCSRFTOKEN') return next(err)
+ 
+  // handle CSRF token errors here
+  res.status(403)
+  res.send("You can't Hack this you fool!")
+})
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

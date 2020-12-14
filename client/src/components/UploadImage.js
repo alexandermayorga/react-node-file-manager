@@ -1,9 +1,11 @@
-import React, {useRef} from 'react'
+import React, { useRef, useContext } from "react";
 import ButtonGroup from "./ui/ButtonGroup";
-import axios from 'axios';
+import { FetchContext } from "../context/FetchContext";
 
-export default function UploadImage({ parentFolderID, filePath, setLoading, userID}) {
+
+export default function UploadImage({ parentFolderID, filePath, setLoading}) {
     const fileInput = useRef()
+    const { authAxios } = useContext(FetchContext);
 
     function onSubmitHandler(e) {
         e.preventDefault();
@@ -15,20 +17,24 @@ export default function UploadImage({ parentFolderID, filePath, setLoading, user
         let uploadFormHTML = document.getElementById('form_upload');
         let formData = new FormData(uploadFormHTML);
 
-        formData.append('userID', userID);
+        // formData.append('userID', userID);
         formData.append('parentFolderID', parentFolderID);
         formData.append('filePath', JSON.stringify({filePath}));
 
-        axios.post('/api/upload', formData, {
+        authAxios
+          .post("upload", formData, {
             headers: {
-                'content-type': 'multipart/form-data'
-            }
-        })
-            .then((res) => {
-                input.current.value = '';
-                setLoading(true)
-            })
-            .catch(err => console.log("Upload Error", err))
+              "content-type": "multipart/form-data",
+            },
+          })
+          .then((res) => {
+            input.current.value = "";
+            setLoading(true);
+          })
+          .catch((err) => {
+              console.log("Upload Error", err);
+              console.log(err.response);
+          });
     }
 
     // function inputChangeHandler(){

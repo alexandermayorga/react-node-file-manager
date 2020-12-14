@@ -51,7 +51,7 @@ router.post('/', (req, res) => {
             .filter(name => name !== "My Drive")
             .join('/')
 
-        let newFilePath = `${UPLOADS_DIR}/${req.body.userID}`;
+        let newFilePath = `${UPLOADS_DIR}/${req.user.sub}`;
         if (buildFolderPath) newFilePath += `/${buildFolderPath}`
 
         const promises = req.files.map(file => {
@@ -63,7 +63,7 @@ router.post('/', (req, res) => {
                 const newFiles = req.files.map(file => {
                     return {
                         name: file.originalname,
-                        userID: req.body.userID,
+                        userID: req.user.sub,
                         parentFolderID: req.body.parentFolderID,
                         size: file.size,
                         filePath,

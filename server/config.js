@@ -8,6 +8,8 @@ function accessTokenCookieGetExpirationTime(){
     new Date(Date.now() + (60 * 15000))
 }
 
+//ToDO clean this file form unnecesasary stuff
+
 module.exports = {
     DATABASE: process.env.DB_URI,
     PORT: process.env.PORT,

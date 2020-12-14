@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect,useContext} from 'react';
 import axios from 'axios';
 import Breadcrumbs from './Breadcrumbs';
 import CreateNewFolder from './CreateNewFolder';
@@ -8,11 +8,11 @@ import Layout from './hoc/Layout';
 import DropZone from "./DropZone";
 import ThumbnailList from "./Thumbnails";
 
-import { deleteItem } from "../api";
-
+import { FetchContext } from '../context/FetchContext';
 import { useParams } from "react-router-dom";
 
-function Drive({user}) {
+function Drive() {
+  const {authAxios, deleteItem} = useContext(FetchContext);
   let {folderID} = useParams();
   const [filePath, setFilePath] = useState([])
   const [currentFiles, setCurrentFiles] = useState([])
@@ -22,15 +22,14 @@ function Drive({user}) {
     let cancel;
 
     const directoryRequest = {
-      userID: user.id,
       parentFolderID: folderID
     }
 
-    axios.post('/api/files', directoryRequest, {
+    authAxios.post('files', directoryRequest, {
       cancelToken: new axios.CancelToken(c => cancel = c)
     })
       .then((res) => {
-        // console.log(res.data)
+
         const filePath = [...res.data.folder.filePath]
         
         if (res.data.folder.name) {
@@ -45,12 +44,15 @@ function Drive({user}) {
         setFilePath(filePath)
         setLoading(false)
       })
-      .catch(err => console.log(err))
+      .catch(err =>{
+        const {data} = err.response;
+        console.log(data);
+      })
 
     //Cancel Old requests if new requests are made. This way old data doesn't load if old request finishes after new request
     return () => cancel(); 
 
-  }, [loading])
+  }, [loading,authAxios,folderID])
 
   function handleFileDelete(file) {
     deleteItem(file,(err, res)=>{
@@ -70,7 +72,6 @@ function Drive({user}) {
           <div className="col-sm-6">
             <div className="well">
               <UploadImage
-                userID={user.id}
                 setLoading={setLoading}
                 parentFolderID={folderID}
                 filePath={filePath}
@@ -81,7 +82,6 @@ function Drive({user}) {
           <div className="col-sm-6">
             <div className="well">
               <CreateNewFolder 
-                userID ={user.id}
                 parentFolderID={folderID}
                 filePath={filePath}
                 setLoading={setLoading}
@@ -118,7 +118,6 @@ function Drive({user}) {
               </div>
             :
             <DropZone 
-              userID={user.id}
               setLoading={setLoading}
               parentFolderID={folderID}
               filePath={filePath}

@@ -1,10 +1,12 @@
-import React from 'react'
+import React,{ useContext } from 'react'
+import { FetchContext } from '../../context/FetchContext';
 import FolderThumbnail from './FolderThumbnail'
 import ImageThumbnail from './ImageThumbnail'
 
-import { downloadItem } from "../../api";
-
 export default function ThumbnailList({ files, deleteItem }) {
+  
+  const { downloadItem } = useContext(FetchContext);
+
   return files.map((file) => {
     return file.isFolder ? (
       <FolderThumbnail
