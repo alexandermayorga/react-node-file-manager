@@ -40,6 +40,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(zip());
 
+
 // if(process.env.NODE_ENV === 'production'){
     app.use(express.static(path.join(__dirname, '../client/build')));
 // }
@@ -78,19 +79,23 @@ app.get("/api/csrf-token", (req, res) => {
     res.json({ csrfToken: req.csrfToken() });
 });
 
-app.use(attachUser);
 
-app.use('/api', checkJwt, indexRouter);
-app.use('/api/upload', checkJwt, uploadRouter);
-app.use("/uploads", checkJwt, express.static(path.join(__dirname, "uploads")));
+// app.use(attachUser);
 
+app.use('/api', attachUser, checkJwt, indexRouter);
+app.use('/api/upload', attachUser, checkJwt, uploadRouter);
+app.use(
+  "/uploads",
+  attachUser,
+  checkJwt,
+  express.static(path.join(__dirname, "uploads"))
+);
 
 // The "catchall" handler: for any request that doesn't
 // match one above, send back React's index.html file.
 app.get('/*', (req, res) => {
     res.sendFile(path.join(__dirname + '../client/build/index.html'));
 });
-
 
 // CSRF error handler
 app.use(function (err, req, res, next) {
