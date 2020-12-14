@@ -80,6 +80,7 @@ app.get("/api/csrf-token", (req, res) => {
 });
 
 
+
 // app.use(attachUser);
 
 app.use('/api', attachUser, checkJwt, indexRouter);
@@ -94,7 +95,7 @@ app.use(
 // The "catchall" handler: for any request that doesn't
 // match one above, send back React's index.html file.
 app.get('/*', (req, res) => {
-    res.sendFile(path.join(__dirname + '../client/build/index.html'));
+    res.sendFile(path.join(__dirname + './../client/build/index.html'));
 });
 
 // CSRF error handler
@@ -125,7 +126,7 @@ app.use(function (err, req, res, next) {
 
     // render the error page
     res.status(err.status || 500);
-    res.send('error');
+    res.send('Server Error');
 });
 
 
