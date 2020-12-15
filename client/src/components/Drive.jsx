@@ -64,6 +64,13 @@ function Drive() {
     })
   }
 
+    function handleUpload(files) {
+      setCurrentFiles(prevCurrentFiles =>{
+        const newCurrentFiles = [...prevCurrentFiles,...files]
+        return newCurrentFiles
+      })
+    }
+
   return (
     <Layout>
       <div className="container-fluid">
@@ -73,6 +80,7 @@ function Drive() {
             <div className="well">
               <UploadImage
                 setLoading={setLoading}
+                onUpload={handleUpload}
                 parentFolderID={folderID}
                 filePath={filePath}
               />
@@ -118,15 +126,13 @@ function Drive() {
               </div>
             :
             <DropZone 
-              setLoading={setLoading}
+              onUpload={handleUpload}
               parentFolderID={folderID}
               filePath={filePath}
             >
               {
                 currentFiles.length < 1 ?
-                <>
-                  Folder is Empty...
-                </>
+                <FolderIsEmpty/>
                 :
                 <div className="row">
                     {currentFiles.filter(item => item.isFolder).length > 0 &&
@@ -163,6 +169,28 @@ function Drive() {
       </div>
     </Layout>
   );
+}
+
+function FolderIsEmpty(){
+  return(
+      <div style={{
+          width: "100%",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "20vh",
+          minHeight: "200px",
+          flexDirection: "column",
+          color: "gray"
+      }}>
+        <div style={{fontSize: "2rem",fontWeight: "bold"}}>
+          Folder is Empty...
+        </div>
+        <div style={{fontSize: "1.8rem"}}>
+          It feels lonely here, how about adding some awesome pictures!
+        </div>
+      </div>
+  )
 }
 
 export default Drive;

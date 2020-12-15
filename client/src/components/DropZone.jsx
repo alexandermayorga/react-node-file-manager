@@ -4,7 +4,7 @@ import GlyphIcon from './ui/GlyphIcon'
 import Loader from './ui/Loader';
 import { FetchContext } from "../context/FetchContext";
 
-export default function DropZone({setLoading,parentFolderID,filePath,children}) {
+export default function DropZone({onUpload,parentFolderID,filePath,children}) {
     const { authAxios } = useContext(FetchContext);
 
     const [draggingOver, setDraggingOver] = useState(false)
@@ -47,14 +47,13 @@ export default function DropZone({setLoading,parentFolderID,filePath,children}) 
             headers: {
                 'content-type': 'multipart/form-data'
             },
-            // onUploadProgress: function(progressEvent) {
-            // var percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total)
-            // console.log(percentCompleted)
-            // }
         })
             .then( res => {
                 setUploading(false)
-                setLoading(true)
+                const { message, files } = res.data;
+                // alert(message);
+
+                onUpload(files);
             } )
             .catch( err => {
                 alert("Upload Error")
