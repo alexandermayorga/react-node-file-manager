@@ -68,7 +68,7 @@ export default function DropZone({onUpload,parentFolderID,filePath,children}) {
             onDragLeave={handleDragLeave}
             onDrop={handleOnDrop}
             onDragOver={handleDragOver}
-            className={`clearfix ${(draggingOver || uploading) && classes.dropZone}`}
+            className={`clearfix ${(draggingOver || uploading) ? classes.dropZone : ''}`}
         >
             {
                 showCurrentState(draggingOver,uploading,children)

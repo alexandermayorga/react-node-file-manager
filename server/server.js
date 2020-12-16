@@ -79,10 +79,6 @@ app.get("/api/csrf-token", (req, res) => {
     res.json({ csrfToken: req.csrfToken() });
 });
 
-
-
-// app.use(attachUser);
-
 app.use('/api', attachUser, checkJwt, indexRouter);
 app.use('/api/upload', attachUser, checkJwt, uploadRouter);
 app.use(

@@ -40,7 +40,6 @@ router.post('/files', async function (req, res, next) {
 
 })
 
-
 router.post('/download', async function (req, res, next) {
   try {
     const file = await File.findById(req.body.id);
@@ -57,20 +56,9 @@ router.post('/download', async function (req, res, next) {
 
   } catch (err) {
     if (err) console.log(err);
-    res.sendStatus(404).end("Error. Not Found")
+    res.status(404).json({ message: "Error. Item Not Found" });
   
   }
-})
-
-router.get('/test', function (req, res, next) {
-  sharp(`${UPLOADS_DIR}/Jazz/images-1593197248121-2017-9-27-55826c (1).jpg`)
-    .resize({ height: 200 })
-    .toFile(`${UPLOADS_DIR}/Jazz/thumb_image.jpg`, (err, info) => { 
-      if(err) return console.log(err)
-      console.log(info)
-      res.end('ok')
-    });
-    
 })
 
 router.post('/new-folder', (req,res)=>{
@@ -127,7 +115,6 @@ router.post('/delete', (req, res) => {
         $or: [
           { _id: file._id },
           { parentFolderID: file._id },
-          // { filePath: {$in: [{}]} }
         ]
       }, callback)
     }
@@ -163,5 +150,14 @@ function getFilePath(file) {
   return folderPath
 }
 
+router.get("/test", function (req, res, next) {
+  sharp(`${UPLOADS_DIR}/Jazz/images-1593197248121-2017-9-27-55826c (1).jpg`)
+    .resize({ height: 200 })
+    .toFile(`${UPLOADS_DIR}/Jazz/thumb_image.jpg`, (err, info) => {
+      if (err) return console.log(err);
+      console.log(info);
+      res.end("ok");
+    });
+});
 
 module.exports = router;

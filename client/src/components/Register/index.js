@@ -95,7 +95,7 @@ export default function Register() {
     
     return (
       <>
-        {redirectOnRegister && <Redirect to="/" />}
+        {redirectOnRegister && <Redirect to="/drive/my-drive" />}
         <div className="centered centered-form">
           <div className="panel panel-primary">
             <div className="panel-heading">

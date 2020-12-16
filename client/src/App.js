@@ -7,6 +7,9 @@ import { FetchProvider } from './context/FetchContext';
 import Home from "./components/Home";
 import Login from "./components/Login";
 import Register from "./components/Register";
+import Shared from "./components/Shared";
+import Starred from "./components/Starred";
+import Layout from "./components/hoc/Layout";
 
 const Drive = lazy(() => import("./components/Drive"));
 
@@ -17,13 +20,14 @@ const PrivateRoute = ({ component: Comp, ...rest }) => {
       {...rest}
       component={() =>
         isAuthenticated() ? (
-          <Comp/>
+          <Layout>
+            <Comp />
+          </Layout>
         ) : (
           <Redirect to="/login" />
         )
       }
     />
-    
   );
 };
 
@@ -40,6 +44,8 @@ const AppRoutes = () => {
         <Route exact path="/">
           <Home />
         </Route>
+        <PrivateRoute component={Shared} exact path="/drive/shared" />
+        <PrivateRoute component={Starred} exact path="/drive/starred" />
         <PrivateRoute component={Drive} exact path="/drive/:folderID" />
         <Route exact path="/drive">
           <Redirect to="/drive/my-drive" />

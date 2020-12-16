@@ -32,11 +32,11 @@ router.post("/", async (req, res, next) => {
       const decodedToken = jwtDecode(token);
       const expiresAt = decodedToken.exp;
 
-      const { firstName, lastName, email } = savedUser;
+      const { firstname, lastname, email } = savedUser;
 
       const userInfo = {
-        firstName,
-        lastName,
+        firstname,
+        lastname,
         email,
       };
 

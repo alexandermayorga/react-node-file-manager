@@ -36,11 +36,6 @@ const userSchema = mongoose.Schema({
 	resetToken: {
 		type: String,
 	},
-	refreshTokens: {
-		type: [String],
-		required: false,
-		default: []
-	},
     active: {
         type: Number,
         default: 0
@@ -73,7 +68,6 @@ userSchema.methods.genAccessToken = function () {
   const user = this;
   return jwt.sign(
     {
-      //   userId: user._id.toHexString(),
       sub: user._id,
       email: user.email,
       iss: "api.reactFileManager",

@@ -4,7 +4,6 @@ import Breadcrumbs from './Breadcrumbs';
 import CreateNewFolder from './CreateNewFolder';
 import UploadImage from './UploadImage';
 import Loader from "./ui/Loader";
-import Layout from './hoc/Layout';
 import DropZone from "./DropZone";
 import ThumbnailList from "./Thumbnails";
 
@@ -72,8 +71,7 @@ function Drive() {
     }
 
   return (
-    <Layout>
-      <div className="container-fluid">
+    <>
         <div className="row">
 
           <div className="col-sm-6">
@@ -106,9 +104,7 @@ function Drive() {
           </div>
 
         </div>
-      </div>{/* container */}
 
-      <div className="container-fluid">
         <div className="row">
           <div className="col-sm-12">
             {
@@ -166,8 +162,7 @@ function Drive() {
 
             </div>
         </div>
-      </div>
-    </Layout>
+    </>
   );
 }
 

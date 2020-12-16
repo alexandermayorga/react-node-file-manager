@@ -33,7 +33,7 @@ export default function Navbar() {
         {/* <!-- Collect the nav links, forms, and other content for toggling --> */}
         <div className="collapse navbar-collapse">
           <ul className="nav navbar-nav navbar-right">
-            <li className={`dropdown ${isDropDownOpen && "open"}`}>
+            <li className={`dropdown ${isDropDownOpen ? "open" : ''}`}>
               <span
                 className="custom-dropdown"
                 data-toggle="dropdown"
