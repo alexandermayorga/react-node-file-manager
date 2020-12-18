@@ -3,7 +3,7 @@ import { FetchContext } from '../../context/FetchContext';
 import FolderThumbnail from './FolderThumbnail'
 import ImageThumbnail from './ImageThumbnail'
 
-export default function ThumbnailList({ files, deleteItem }) {
+export default function ThumbnailList({ files, deleteItem, starItem }) {
   
   const { downloadItem } = useContext(FetchContext);
 
@@ -14,6 +14,7 @@ export default function ThumbnailList({ files, deleteItem }) {
         file={file}
         onDownloadFile={downloadItem}
         onDeleteItem={deleteItem}
+        onStarItem={starItem}
       />
     ) : (
       <ImageThumbnail
@@ -21,6 +22,7 @@ export default function ThumbnailList({ files, deleteItem }) {
         file={file}
         onDownloadFile={downloadItem}
         onDeleteItem={deleteItem}
+        onStarItem={starItem}
       />
     );
   });

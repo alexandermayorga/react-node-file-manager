@@ -1,9 +1,11 @@
 import React from 'react'
 import { useHistory } from "react-router-dom";
+import GlyphIcon from "../ui/GlyphIcon";
 import "./style.css";
 
-export default function FolderThumbnail({ file, onDownloadFile, onDeleteItem }) {
+export default function FolderThumbnail({ file, onDownloadFile, onDeleteItem, onStarItem }) {
   let history = useHistory();
+  const { starred } = file;
 
   function handleClickFileDelete() {
     onDeleteItem(file);
@@ -13,6 +15,9 @@ export default function FolderThumbnail({ file, onDownloadFile, onDeleteItem }) 
   }
   function handleClickFolderOpen() {
     history.push(`/drive/${file._id}`);
+  }
+  function handleStarItem() {
+    onStarItem(file);
   }
 
   return (
@@ -43,15 +48,22 @@ export default function FolderThumbnail({ file, onDownloadFile, onDeleteItem }) 
                   aria-label="File Actions"
                 >
                   <button
-                    className="btn btn-sm btn-danger api-delete"
+                    className="btn btn-sm btn-default"
                     aria-label="delete"
                     title="delete"
                     onClick={handleClickFileDelete}
                   >
-                    <span
-                      className="glyphicon glyphicon-trash"
-                      aria-hidden="true"
-                    ></span>
+                    <GlyphIcon icon="trash" />
+                  </button>
+                  <button
+                    className={`btn btn-sm btn-${
+                      starred ? "warning" : "default"
+                    }`}
+                    aria-label="favorite"
+                    title="favorite"
+                    onClick={handleStarItem}
+                  >
+                    <GlyphIcon icon={starred ? "star" : "star-empty"} />
                   </button>
                   <button
                     className="btn btn-sm btn-default"
@@ -59,10 +71,7 @@ export default function FolderThumbnail({ file, onDownloadFile, onDeleteItem }) 
                     title="download"
                     onClick={handleClickFileDownload}
                   >
-                    <span
-                      className="glyphicon glyphicon-cloud-download"
-                      aria-hidden="true"
-                    ></span>
+                    <GlyphIcon icon="cloud-download" />
                   </button>
                 </div>
               </div>

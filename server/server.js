@@ -81,6 +81,21 @@ app.get("/api/csrf-token", (req, res) => {
 
 app.use('/api', attachUser, checkJwt, indexRouter);
 app.use('/api/upload', attachUser, checkJwt, uploadRouter);
+
+app.use(
+  "/uploads",
+  attachUser,
+  checkJwt,
+  function (req,res, next) {
+    const userFromRequest = req.originalUrl.replace("/uploads/",'').split("/")[0];
+    if (userFromRequest !== req.user.sub)
+        return res.sendStatus(403); 
+    
+    //TODO: Check if resource has been shared with this user
+    return next();
+  }
+)
+
 app.use(
   "/uploads",
   attachUser,

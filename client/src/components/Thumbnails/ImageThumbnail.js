@@ -1,16 +1,16 @@
 import React from 'react'
+import GlyphIcon from '../ui/GlyphIcon';
 import "./style.css";
 
-export default function ImageThumbnail({ file, onDownloadFile, onDeleteItem }) {
-  const imgPath = !file.isFolder
-    ? file.filePath
-        .map((path) => path.name)
-        .filter((name) => name !== "My Drive")
-        .join("/")
-    : null;
+export default function ImageThumbnail({ file, onDownloadFile, onDeleteItem, onStarItem }) {
+  const imgPath = file.filePath
+    .map((path) => path.name)
+    .filter((name) => name !== "My Drive")
+    .join("/");
 
   //file size comes in bytes. This transforms it to kilobytes
   const fileSize = Math.round(file.size / 1000);
+  const {starred} = file
 
   function handleClickFileDelete() {
     onDeleteItem(file);
@@ -18,13 +18,18 @@ export default function ImageThumbnail({ file, onDownloadFile, onDeleteItem }) {
   function handleClickFileDownload() {
     onDownloadFile(file);
   }
+  function handleStarItem() {
+    onStarItem(file);
+  }
 
   return (
     <div className="col-xs-6 col-sm-4 col-lg-3">
       <div className="panel panel-default">
         <div className="panel-body">
           <img
-            src={`/uploads/${file.userID}/${imgPath && `${imgPath}/` }${file.name}`}
+            src={`/uploads/${file.userID}/${imgPath && `${imgPath}/`}${
+              file.name
+            }`}
             className="img-responsive center-block img-thumbnail"
             alt={file.name}
           />
@@ -41,10 +46,10 @@ export default function ImageThumbnail({ file, onDownloadFile, onDeleteItem }) {
 
         <div className="panel-footer">
           <div className="row">
-            <div className="col-xs-6">
+            <div className="col-xs-4">
               <div className="text-muted">{`${fileSize}kb`}</div>
             </div>
-            <div className="col-xs-6">
+            <div className="col-xs-8">
               <div className="text-right">
                 <div
                   className="btn-group"
@@ -52,15 +57,22 @@ export default function ImageThumbnail({ file, onDownloadFile, onDeleteItem }) {
                   aria-label="File Actions"
                 >
                   <button
-                    className="btn btn-sm btn-danger api-delete"
+                    className="btn btn-sm btn-default"
                     aria-label="delete"
                     title="delete"
                     onClick={handleClickFileDelete}
                   >
-                    <span
-                      className="glyphicon glyphicon-trash"
-                      aria-hidden="true"
-                    ></span>
+                    <GlyphIcon icon="trash" />
+                  </button>
+                  <button
+                    className={`btn btn-sm btn-${
+                      starred ? "warning" : "default"
+                    }`}
+                    aria-label="favorite"
+                    title="favorite"
+                    onClick={handleStarItem}
+                  >
+                    <GlyphIcon icon={starred ? "star" : "star-empty"} />
                   </button>
                   <button
                     className="btn btn-sm btn-default"
@@ -68,10 +80,7 @@ export default function ImageThumbnail({ file, onDownloadFile, onDeleteItem }) {
                     title="download"
                     onClick={handleClickFileDownload}
                   >
-                    <span
-                      className="glyphicon glyphicon-cloud-download"
-                      aria-hidden="true"
-                    ></span>
+                    <GlyphIcon icon="cloud-download" />
                   </button>
                 </div>
               </div>

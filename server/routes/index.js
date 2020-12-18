@@ -127,9 +127,34 @@ router.post('/delete', (req, res) => {
     
     res.json({ message: "File has been removed" });
   }
-
-
 })
+
+router.post("/starred", async (req, res) => {
+  try {
+    const fileID = req.body.fileID;
+
+    if (!fileID) return res.status(400).json({ message: "Bad Request" });
+
+    const doc = await File.findOne({ _id: fileID});
+
+    if(!doc) return res.status(404).json({message: 'Not Found'})
+    
+    if (doc.userID !== req.user.sub)
+      return res.status(401).json({ message: "Unauthorized access request" });
+
+    doc.starred = !doc.starred
+    await doc.save()
+
+    return res.json({ message: "Item Updated" });
+    
+  } catch (error) {
+    console.log(error);
+    return res.status(400).json({
+      mesage: 'Something went wrong. Please try again.',error
+    })
+  }
+});
+
 
 /**
  * Builds the path of a file/folder

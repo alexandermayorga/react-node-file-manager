@@ -36,6 +36,10 @@ const FetchProvider = ({ children }) => {
         });
   }
 
+  function starItem(fileID) {
+    return authAxios.post("/starred", { fileID })
+  }
+
 
   function downloadItem(file,cb) {
     authAxios
@@ -77,7 +81,8 @@ const FetchProvider = ({ children }) => {
       value={{
         authAxios,
         deleteItem,
-        downloadItem
+        downloadItem,
+        starItem
       }}
     >
       {children}

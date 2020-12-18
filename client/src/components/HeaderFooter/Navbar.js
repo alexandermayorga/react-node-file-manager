@@ -45,7 +45,7 @@ export default function Navbar() {
                 {authState.userInfo.firstname} <span className="caret"></span>
               </span>
               <ul className="dropdown-menu">
-                <li>
+                {/* <li>
                   <a href="/">Action</a>
                 </li>
                 <li>
@@ -54,7 +54,7 @@ export default function Navbar() {
                 <li>
                   <a href="/">Something else here</a>
                 </li>
-                <li role="separator" className="divider"></li>
+                <li role="separator" className="divider"></li> */}
                 <li>
                   <div
                     className="custom-dropdown__action"

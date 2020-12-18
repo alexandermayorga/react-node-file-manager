@@ -11,7 +11,7 @@ import { FetchContext } from '../context/FetchContext';
 import { useParams } from "react-router-dom";
 
 function Drive() {
-  const {authAxios, deleteItem} = useContext(FetchContext);
+  const {authAxios, deleteItem, starItem} = useContext(FetchContext);
   let {folderID} = useParams();
   const [filePath, setFilePath] = useState([])
   const [currentFiles, setCurrentFiles] = useState([])
@@ -63,12 +63,31 @@ function Drive() {
     })
   }
 
-    function handleUpload(files) {
-      setCurrentFiles(prevCurrentFiles =>{
-        const newCurrentFiles = [...prevCurrentFiles,...files]
-        return newCurrentFiles
-      })
+  function handleUpload(files) {
+    setCurrentFiles(prevCurrentFiles =>{
+      const newCurrentFiles = [...prevCurrentFiles,...files]
+      return newCurrentFiles
+    })
+  }
+
+  async function handleStarItem(file) {
+    try {
+      await starItem(file._id);
+
+      const starredFileIndex = currentFiles.findIndex((item) => item._id === file._id)
+      const newCurrentFiles = [...currentFiles]
+      const fileToUpdate = newCurrentFiles[starredFileIndex]
+      fileToUpdate['starred'] = !fileToUpdate['starred']
+      setCurrentFiles(newCurrentFiles)
+
+    } catch (error) {
+      const {data} = (error.response);
+      console.log(data);
     }
+  }
+
+  const folders = currentFiles.filter(item => item.isFolder);
+  const files = currentFiles.filter(item => !item.isFolder);
 
   return (
     <>
@@ -131,26 +150,28 @@ function Drive() {
                 <FolderIsEmpty/>
                 :
                 <div className="row">
-                    {currentFiles.filter(item => item.isFolder).length > 0 &&
+                    {folders.length > 0 &&
                     <div className="col-sm-12">
                         <div className="h5" style={{ marginBottom: "20px" }}>Folders</div>
                         <div className="row">
                             <ThumbnailList 
-                              files={currentFiles.filter(item => item.isFolder)} 
-                              deleteItem={handleFileDelete} 
+                              files={folders} 
+                              deleteItem={handleFileDelete}
+                              starItem={handleStarItem}
                             />
                         </div>
                     </div>
                     }
 
-                    {currentFiles.filter(item => !item.isFolder).length > 0 &&
+                    {files.length > 0 &&
                     <div className="col-sm-12">
                         <div className="h5" style={{ marginBottom: "20px" }}>Files</div>
 
                         <div className="row">
                             <ThumbnailList 
-                              files={currentFiles.filter(item => !item.isFolder)} 
-                              deleteItem={handleFileDelete} 
+                              files={files} 
+                              deleteItem={handleFileDelete}
+                              starItem={handleStarItem}
                             />
                         </div>
                     </div>

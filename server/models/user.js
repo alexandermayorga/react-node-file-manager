@@ -80,163 +80,163 @@ userSchema.methods.genAccessToken = function () {
 
 
 
-userSchema.methods.genRefreshToken = function (cb) {
-	let user = this;
+// userSchema.methods.genRefreshToken = function (cb) {
+// 	let user = this;
 
-	let refreshToken = jwt.sign(
-		{ userId: user._id.toHexString(), email: user.email, firstname: user.firstname }, 
-		config.REFRESH_TOKEN_SECRET, 
-		{ expiresIn: '1d' }
-		);
+// 	let refreshToken = jwt.sign(
+// 		{ userId: user._id.toHexString(), email: user.email, firstname: user.firstname }, 
+// 		config.REFRESH_TOKEN_SECRET, 
+// 		{ expiresIn: '1d' }
+// 		);
 
-	cleanRefreshTokens(user.refreshTokens)
-	.then(tokens =>{
-		const activeRefreshTokens = tokens.filter(token => token !== null)
+// 	cleanRefreshTokens(user.refreshTokens)
+// 	.then(tokens =>{
+// 		const activeRefreshTokens = tokens.filter(token => token !== null)
 
-		user.refreshTokens = [...activeRefreshTokens, refreshToken];
+// 		user.refreshTokens = [...activeRefreshTokens, refreshToken];
 
-		const accessToken = user.genAccessToken();
+// 		const accessToken = user.genAccessToken();
 
-		user.save((err, user) => {
-			if (err) return cb(err);
-			cb(null, user, refreshToken, accessToken)
-		})
-	})
-	.catch(error => {
-		return cb(error);
-	})
+// 		user.save((err, user) => {
+// 			if (err) return cb(err);
+// 			cb(null, user, refreshToken, accessToken)
+// 		})
+// 	})
+// 	.catch(error => {
+// 		return cb(error);
+// 	})
 
-}
+// }
 
-userSchema.statics.refreshAccessToken = function (refreshToken,cb) {
-	const user = this;
+// userSchema.statics.refreshAccessToken = function (refreshToken,cb) {
+// 	const user = this;
 
-	jwt.verify( refreshToken, config.REFRESH_TOKEN_SECRET, (err, decode) => {
-		if (err) return cb(err); // Refresh Token Invalid or Expired
+// 	jwt.verify( refreshToken, config.REFRESH_TOKEN_SECRET, (err, decode) => {
+// 		if (err) return cb(err); // Refresh Token Invalid or Expired
 
-		//Check if in DB list
-		user.findOne({ '_id': decode.userId }, (err, user) => {
-			if (err) return cb(err);
+// 		//Check if in DB list
+// 		user.findOne({ '_id': decode.userId }, (err, user) => {
+// 			if (err) return cb(err);
 			
-			const matchRefreshToken = token => token == refreshToken;
-			const validToken = user.refreshTokens.some(matchRefreshToken);
+// 			const matchRefreshToken = token => token == refreshToken;
+// 			const validToken = user.refreshTokens.some(matchRefreshToken);
 
-			//Todo: Delete Refresh Token from client
-			if (!validToken) return cb({
-				message: "No Matching Refresh Token in DB. Delete Refresh Token from client",
-				deleteClientRefreshToken: true
-			});
+// 			//Todo: Delete Refresh Token from client
+// 			if (!validToken) return cb({
+// 				message: "No Matching Refresh Token in DB. Delete Refresh Token from client",
+// 				deleteClientRefreshToken: true
+// 			});
 
 
-			jwt.sign({ userId: decode.userId }, config.ACCESS_TOKEN_SECRET, { expiresIn: '10m' }, (err, accessToken) => {
-				if (err) return cb(err);
-				return cb(null, {user, accessToken} );
-			});
-		})
-	})
-}
+// 			jwt.sign({ userId: decode.userId }, config.ACCESS_TOKEN_SECRET, { expiresIn: '10m' }, (err, accessToken) => {
+// 				if (err) return cb(err);
+// 				return cb(null, {user, accessToken} );
+// 			});
+// 		})
+// 	})
+// }
 
-userSchema.statics.verifyAccessToken = function (tokens, cb) {
-	const user = this;
+// userSchema.statics.verifyAccessToken = function (tokens, cb) {
+// 	const user = this;
 
-	jwt.verify( tokens.accessToken, config.ACCESS_TOKEN_SECRET, (err, decode) => {
+// 	jwt.verify( tokens.accessToken, config.ACCESS_TOKEN_SECRET, (err, decode) => {
 
-		if (err) {  // Access Token Invalid or Expired. Try to generate a new one.
-			user.refreshAccessToken(tokens.refreshToken, (err, data) => {
-				if (err) return cb(err); // Refresh Token Invalid or Expired
+// 		if (err) {  // Access Token Invalid or Expired. Try to generate a new one.
+// 			user.refreshAccessToken(tokens.refreshToken, (err, data) => {
+// 				if (err) return cb(err); // Refresh Token Invalid or Expired
 
-				return cb(null, data.user, data.accessToken)
+// 				return cb(null, data.user, data.accessToken)
 				
-			});
-		}
-		else { // Valid Access Token
-			user.findOne({ '_id': decode.userId }, (err, user) => {
-				if (err) return cb(err);
+// 			});
+// 		}
+// 		else { // Valid Access Token
+// 			user.findOne({ '_id': decode.userId }, (err, user) => {
+// 				if (err) return cb(err);
 
-				cb(null, user)
-			})
-		}
-	})
-}
+// 				cb(null, user)
+// 			})
+// 		}
+// 	})
+// }
 
-userSchema.methods.genResetToken = function (cb) {
-	const user = this;
+// userSchema.methods.genResetToken = function (cb) {
+// 	const user = this;
 
-	user.resetToken = jwt.sign({ userId: user._id.toHexString() }, config.RESET_TOKEN_SECRET, { expiresIn: '1d' });
+// 	user.resetToken = jwt.sign({ userId: user._id.toHexString() }, config.RESET_TOKEN_SECRET, { expiresIn: '1d' });
 
-	user.save((err, user) => {
-		if (err) return cb(err);
-		cb(null, user.resetToken);
-	})
-}
+// 	user.save((err, user) => {
+// 		if (err) return cb(err);
+// 		cb(null, user.resetToken);
+// 	})
+// }
 
-userSchema.statics.findByResetToken = function (resetToken, cb) {
-	const user = this;
+// userSchema.statics.findByResetToken = function (resetToken, cb) {
+// 	const user = this;
 
-	jwt.verify(resetToken, config.RESET_TOKEN_SECRET, (err, decode) => {
-		if (err) return cb(null)
+// 	jwt.verify(resetToken, config.RESET_TOKEN_SECRET, (err, decode) => {
+// 		if (err) return cb(null)
 
-		user.findOne({ '_id': decode.userId, 'resetToken': resetToken }, (err, user) => {
-			if (err) return cb(err);
+// 		user.findOne({ '_id': decode.userId, 'resetToken': resetToken }, (err, user) => {
+// 			if (err) return cb(err);
 
-			cb(null, user)
-		})
-	})
+// 			cb(null, user)
+// 		})
+// 	})
 
-}
+// }
 
-userSchema.statics.deleteTokens = function (refreshToken,cb) {
-	const user = this;
+// userSchema.statics.deleteTokens = function (refreshToken,cb) {
+// 	const user = this;
 
-	jwt.verify(refreshToken, config.REFRESH_TOKEN_SECRET, (err, decode) => {
-		if (err) return cb(err); 
+// 	jwt.verify(refreshToken, config.REFRESH_TOKEN_SECRET, (err, decode) => {
+// 		if (err) return cb(err); 
 
-		//Check if in DB list
-		user.findOne({ '_id': decode.userId }, (err, user) => {
-			if (err) return cb(err);
+// 		//Check if in DB list
+// 		user.findOne({ '_id': decode.userId }, (err, user) => {
+// 			if (err) return cb(err);
 
-			const newTokenList = user.refreshTokens.filter(token => token !== refreshToken);
+// 			const newTokenList = user.refreshTokens.filter(token => token !== refreshToken);
 
-			user.refreshTokens = newTokenList;
+// 			user.refreshTokens = newTokenList;
 
-			user.save((err, user) => {
-				if (err) return cb(err);
-				return cb(null)
-			})
-		})
+// 			user.save((err, user) => {
+// 				if (err) return cb(err);
+// 				return cb(null)
+// 			})
+// 		})
 
-	})
+// 	})
 
-}
+// }
 
 /**
  * Takes an array of JWT tokens and returns a new array of non Expired tokens
  * @param {Array} refreshTokens 
  */
-function cleanRefreshTokens(refreshTokens) {
-	if (refreshTokens.length < 1) return new Promise((res,rej) => res([null]))
+// function cleanRefreshTokens(refreshTokens) {
+// 	if (refreshTokens.length < 1) return new Promise((res,rej) => res([null]))
 
-	return Promise.all(refreshTokens.map(
-		async (refreshToken) => {
-			try {
-				const promise = new Promise((res, rej) => {
+// 	return Promise.all(refreshTokens.map(
+// 		async (refreshToken) => {
+// 			try {
+// 				const promise = new Promise((res, rej) => {
 
-					jwt.verify(refreshToken, config.REFRESH_TOKEN_SECRET, (err, decode) => {
-						if (err && err.name != 'TokenExpiredError') return rej(err)
-						if (err && err.name == 'TokenExpiredError') return res(null)
-						res(refreshToken)
-					})
+// 					jwt.verify(refreshToken, config.REFRESH_TOKEN_SECRET, (err, decode) => {
+// 						if (err && err.name != 'TokenExpiredError') return rej(err)
+// 						if (err && err.name == 'TokenExpiredError') return res(null)
+// 						res(refreshToken)
+// 					})
 
-				})
+// 				})
 
-				const result = await promise;
-				return result;
-			} catch (rejected) {
-				return rejected;
-			}
-		}
-	))
-}
+// 				const result = await promise;
+// 				return result;
+// 			} catch (rejected) {
+// 				return rejected;
+// 			}
+// 		}
+// 	))
+// }
 
 
 const User = mongoose.model('User',userSchema);

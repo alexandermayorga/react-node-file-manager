@@ -25,6 +25,10 @@ const fileSchema = mongoose.Schema({
         type: Number,
         default: 0
     },
+    starred: {
+        type: Boolean,
+        default: false
+    },
     // thumbPath: {
     //     type: String,
     // },
