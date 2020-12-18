@@ -44,8 +44,9 @@ function Drive() {
         setLoading(false)
       })
       .catch(err =>{
-        const {data} = err.response;
-        console.log(data);
+        console.log(err);
+        // const {data} = err.response;
+        // console.log(data);
       })
 
     //Cancel Old requests if new requests are made. This way old data doesn't load if old request finishes after new request

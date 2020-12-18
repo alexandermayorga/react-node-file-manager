@@ -30,7 +30,7 @@ router.post('/files', async function (req, res, next) {
     // console.log(newFolder);
     // console.log(folder);
 
-    res.send({ files, folder})
+    res.json({ files, folder})
 
   } catch (err) {
     console.log(err);
@@ -128,6 +128,22 @@ router.post('/delete', (req, res) => {
     res.json({ message: "File has been removed" });
   }
 })
+
+router.get("/starred", async function (req, res, next) {
+  try {
+    const files = await File.find({
+      userID: req.user.sub,
+      starred: true,
+    });
+
+    res.json({ files });
+  } catch (err) {
+    console.log(err);
+    return res
+      .status(400)
+      .json({ message: "Something went wrong. Please Try again." });
+  }
+});
 
 router.post("/starred", async (req, res) => {
   try {
