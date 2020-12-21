@@ -1,14 +1,9 @@
 import React, {useState, useEffect,useContext} from 'react';
 import axios from 'axios';
-import Breadcrumbs from './Breadcrumbs';
-import CreateNewFolder from './CreateNewFolder';
-import UploadImage from './UploadImage';
 import Loader from "./ui/Loader";
-import DropZone from "./DropZone";
 import ThumbnailList from "./Thumbnails";
 
 import { FetchContext } from '../context/FetchContext';
-import { useParams } from "react-router-dom";
 
 function Starred() {
   const [loading, setLoading] = useState(true)
@@ -34,7 +29,7 @@ function Starred() {
     //Cancel Old requests if new requests are made. This way old data doesn't load if old request finishes after new request
     return () => cancel(); 
 
-  }, [])
+  }, [authAxios])
 
   function handleFileDelete(file) {
     deleteItem(file,(err, res)=>{

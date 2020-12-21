@@ -15,9 +15,9 @@ export default function Login() {
     const [loginError, setLoginError] = useState();
     const [loginLoading, setLoginLoading] = useState(false);
 
-    useEffect(()=>{
-      if(isAuthenticated()) setRedirectOnLogin(true);
-    },[]);
+    useEffect(() => {
+      if (isAuthenticated()) setRedirectOnLogin(true);
+    }, []);
 
 
     function handleEmailChange(e) {

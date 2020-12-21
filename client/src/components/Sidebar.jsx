@@ -1,6 +1,7 @@
 import React, {useEffect,useState} from 'react'
 import { Link, useLocation, useParams } from 'react-router-dom'
 import GlyphIcon from './ui/GlyphIcon'
+import './sidebar.css'
 
 import { v4 as uuidv4 } from 'uuid';
 
@@ -15,7 +16,7 @@ export default function Sidebar() {
         let pathname = location.pathname.replace('/drive','')
 
         setActiveLink(pathname);
-    }, [location])
+    }, [location,folderID])
 
     const links = [
         {

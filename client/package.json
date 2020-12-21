@@ -15,7 +15,8 @@
     "react-dom": "^16.13.1",
     "react-router-dom": "^5.2.0",
     "react-scripts": "^3.4.3",
-    "uuid": "^8.3.2"
+    "uuid": "^8.3.2",
+    "validator": "^13.5.2"
   },
   "scripts": {
     "start": "PORT=3090 react-scripts start",

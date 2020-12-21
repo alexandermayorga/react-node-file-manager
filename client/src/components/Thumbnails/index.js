@@ -3,8 +3,7 @@ import { FetchContext } from '../../context/FetchContext';
 import FolderThumbnail from './FolderThumbnail'
 import ImageThumbnail from './ImageThumbnail'
 
-export default function ThumbnailList({ files, deleteItem, starItem }) {
-  
+export default function ThumbnailList({ files, deleteItem, starItem, shareItem }) {
   const { downloadItem } = useContext(FetchContext);
 
   return files.map((file) => {
@@ -23,6 +22,7 @@ export default function ThumbnailList({ files, deleteItem, starItem }) {
         onDownloadFile={downloadItem}
         onDeleteItem={deleteItem}
         onStarItem={starItem}
+        onShareItem={shareItem}
       />
     );
   });

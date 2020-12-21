@@ -9,7 +9,7 @@ import Login from "./components/Login";
 import Register from "./components/Register";
 import Shared from "./components/Shared";
 import Starred from "./components/Starred";
-import Layout from "./components/hoc/Layout";
+import Layout from "./components/hoc/AdminLayout";
 
 const Drive = lazy(() => import("./components/Drive"));
 

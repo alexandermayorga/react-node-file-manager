@@ -1,6 +1,7 @@
 import React, { useState, useContext } from "react";
 import { Link } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
+import GlyphIcon from "../ui/GlyphIcon";
 
 export default function Navbar() {
   const { logout, authState } = useContext(AuthContext);
@@ -60,7 +61,7 @@ export default function Navbar() {
                     className="custom-dropdown__action"
                     onClick={handleLogOutClick}
                   >
-                    Log Out
+                    <GlyphIcon icon={'log-out'}/> Log Out
                   </div>
                 </li>
               </ul>

@@ -37,7 +37,7 @@ export default function UploadImage({ parentFolderID, filePath, onUpload }) {
         fileInput.current.value = "";
 
         const { message, files } = res.data;
-        // alert(message);
+        console.log(message);
         
         onUpload(files);
       })

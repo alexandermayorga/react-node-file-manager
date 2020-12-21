@@ -51,7 +51,7 @@ export default function DropZone({onUpload,parentFolderID,filePath,children}) {
             .then( res => {
                 setUploading(false)
                 const { message, files } = res.data;
-                // alert(message);
+                console.log(message);
 
                 onUpload(files);
             } )

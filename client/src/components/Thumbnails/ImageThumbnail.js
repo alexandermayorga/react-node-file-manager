@@ -2,7 +2,13 @@ import React from 'react'
 import GlyphIcon from '../ui/GlyphIcon';
 import "./style.css";
 
-export default function ImageThumbnail({ file, onDownloadFile, onDeleteItem, onStarItem }) {
+export default function ImageThumbnail({
+  file,
+  onDownloadFile,
+  onDeleteItem,
+  onStarItem,
+  onShareItem,
+}) {
   const imgPath = file.filePath
     .map((path) => path.name)
     .filter((name) => name !== "My Drive")
@@ -10,16 +16,19 @@ export default function ImageThumbnail({ file, onDownloadFile, onDeleteItem, onS
 
   //file size comes in bytes. This transforms it to kilobytes
   const fileSize = Math.round(file.size / 1000);
-  const {starred} = file
+  const { starred } = file;
 
-  function handleClickFileDelete() {
+  function handleClickItemDelete() {
     onDeleteItem(file);
   }
-  function handleClickFileDownload() {
+  function handleClickItemDownload() {
     onDownloadFile(file);
   }
-  function handleStarItem() {
+  function handleClickItemStar() {
     onStarItem(file);
+  }
+  function handleClickItemShare() {
+    onShareItem(file);
   }
 
   return (
@@ -60,7 +69,7 @@ export default function ImageThumbnail({ file, onDownloadFile, onDeleteItem, onS
                     className="btn btn-sm btn-default"
                     aria-label="delete"
                     title="delete"
-                    onClick={handleClickFileDelete}
+                    onClick={handleClickItemDelete}
                   >
                     <GlyphIcon icon="trash" />
                   </button>
@@ -70,15 +79,23 @@ export default function ImageThumbnail({ file, onDownloadFile, onDeleteItem, onS
                     }`}
                     aria-label="favorite"
                     title="favorite"
-                    onClick={handleStarItem}
+                    onClick={handleClickItemStar}
                   >
                     <GlyphIcon icon={starred ? "star" : "star-empty"} />
                   </button>
                   <button
                     className="btn btn-sm btn-default"
+                    aria-label="share"
+                    title="share"
+                    onClick={handleClickItemShare}
+                  >
+                    <GlyphIcon icon="share" />
+                  </button>
+                  <button
+                    className="btn btn-sm btn-default"
                     aria-label="download"
                     title="download"
-                    onClick={handleClickFileDownload}
+                    onClick={handleClickItemDownload}
                   >
                     <GlyphIcon icon="cloud-download" />
                   </button>

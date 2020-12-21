@@ -7,6 +7,7 @@ const { Provider } = AuthContext;
 
 const AuthProvider = ({ children }) => {
   const history = useHistory();
+  let silentRefresh;
 
   const userInfo = localStorage.getItem("userInfo");
   const expiresAt = localStorage.getItem("expiresAt");
@@ -24,6 +25,12 @@ const AuthProvider = ({ children }) => {
       expiresAt, 
       userInfo 
     });
+
+    const SILENT_REFRESH_TIME = new Date(expiresAt * 1000 - 1000 * 60 * 5);
+    silentRefresh = setTimeout(() => {
+      alert("Do Silent Refresh!");
+      console.log("Do Silent Refresh!");
+    }, SILENT_REFRESH_TIME.getTime() - Date.now());
   }
 
   const logout = () => {
@@ -35,6 +42,9 @@ const AuthProvider = ({ children }) => {
 
     localStorage.removeItem("userInfo");
     localStorage.removeItem("expiresAt");
+
+    clearTimeout(silentRefresh);
+
     setAuthState({
       expiresAt: null,
       userInfo: {},
@@ -48,10 +58,6 @@ const AuthProvider = ({ children }) => {
     return new Date().getTime() / 1000 < authState.expiresAt
   }
 
-  const isAdmin = () => {
-    return authState.userInfo.role === 'admin';
-  }
-
   return (
     <Provider
       value={{
@@ -59,7 +65,6 @@ const AuthProvider = ({ children }) => {
         setAuthState: (authInfo) => setAuthInfo(authInfo),
         isAuthenticated,
         logout,
-        isAdmin,
       }}
     >
       {children}
